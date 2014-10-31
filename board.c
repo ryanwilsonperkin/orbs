@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "board.h"
 
 void init_board(board *b, int board_width, int random_seed)
@@ -8,16 +10,16 @@ void free_board(board *b)
 {
 }
 
-void print_board(board b)
+void print_board(board b, FILE *results_file)
 {
 }
 
-bool check_board(board b, int max_density, int n_procs)
+double check_board(board b, int max_density, int n_procs)
 {
-    return true;
+    return 0;
 }
 
-
-void shift_board(board *b, int n_procs)
+double shift_board(board *b, int n_procs)
 {
+    return 0;
 }

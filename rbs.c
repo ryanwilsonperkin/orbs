@@ -6,6 +6,7 @@
 #include "board.h"
 #include "rbs.h"
 
+#define RESULTS_FILE "redblue.txt"
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
 
 int main(int argc, char *argv[])
@@ -63,15 +64,21 @@ int main(int argc, char *argv[])
 int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_steps, int random_seed)
 {
     board b;
+    FILE *results_file;
+    double elapsed_time;
     init_board(&b, board_width, random_seed);
     for (int i=0; i < max_steps; i++) {
-        if (check_board(b, max_density, n_procs)) {
+        check_board(b, max_density, n_procs);
+        if (b.complete) {
             break;
         } else {
             shift_board(&b, n_procs);
         }
     }
-    print_board(b);
+    results_file = fopen(RESULTS_FILE, "w");
+    print_board(b, results_file);
+    // Print details to file
+    // Print details to stdout
     free_board(&b);
     return 0;
 }
