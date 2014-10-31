@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "board.h"
+#include "rbs.h"
+
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
+
 int main(int argc, char *argv[])
 {
     int n_procs = 0;
@@ -47,5 +51,33 @@ int main(int argc, char *argv[])
     if (tile_width <= 0 || board_width % tile_width != 0) ERROR("Tile width must divide board width.");
     if (max_density < 1 || max_density > 100) ERROR("Max density must be a value between 1 and 100.");
     if (max_steps <= 0) ERROR("Max steps must be greater than 0.");
+
+    if (interactive) {
+        return rbs_interactive(n_procs, board_width, tile_width, max_density, max_steps, random_seed);
+    } else {
+        return rbs(n_procs, board_width, tile_width, max_density, max_steps, random_seed);
+    }
     return 0;
 }
+
+int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_steps, int random_seed)
+{
+    board b;
+    init_board(&b, board_width, random_seed);
+    for (int i=0; i < max_steps; i++) {
+        if (check_board(b, max_density, n_procs)) {
+            break;
+        } else {
+            shift_board(&b, n_procs);
+        }
+    }
+    print_board(b);
+    free_board(&b);
+    return 0;
+}
+
+int rbs_interactive(int n_procs, int board_width, int tile_width, int max_density, int max_steps, int random_seed)
+{
+    return 0;
+}
+
