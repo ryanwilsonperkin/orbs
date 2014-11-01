@@ -82,5 +82,18 @@ double check_board(board *b, int max_density, int tile_width, int n_procs)
 
 double shift_board(board *b, int n_procs)
 {
+    int red_elapsed_time, blue_elapsed_time;
+    red_elapsed_time = shift_red(b, n_procs);
+    blue_elapsed_time = shift_blue(b, n_procs);
+    return red_elapsed_time + blue_elapsed_time;
+}
+
+double shift_red(board *b, int n_procs)
+{
+    return 0;
+}
+
+double shift_blue(board *b, int n_procs)
+{
     return 0;
 }
