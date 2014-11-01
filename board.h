@@ -10,6 +10,7 @@ typedef struct board_
     int width;
     int tile_width;
     bool complete;
+    int max_density;
 } board;
 
 double check_board(board b, int max_density, int n_procs);
