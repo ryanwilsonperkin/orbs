@@ -54,20 +54,22 @@ int main(int argc, char *argv[])
     if (max_steps <= 0) ERROR("Max steps must be greater than 0.");
 
     if (interactive) {
-        return rbs_interactive(n_procs, board_width, tile_width, max_density, max_steps, random_seed);
+        return rbs_interactive(argc, argv, n_procs, board_width, tile_width, max_density, max_steps, random_seed);
     } else {
-        return rbs(n_procs, board_width, tile_width, max_density, max_steps, random_seed);
+        return rbs(argc, argv, n_procs, board_width, tile_width, max_density, max_steps, random_seed);
     }
     return 0;
 }
 
-int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_steps, int random_seed)
+int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, int max_density, int max_steps,
+        int random_seed)
 {
     board b;
+    int num_steps;
     FILE *results_file;
     double elapsed_time = 0;
     init_board(&b, board_width, random_seed);
-    for (int i=0; i < max_steps; i++) {
+    for (num_steps = 0; num_steps < max_steps; num_steps++) {
         elapsed_time += check_board(&b, max_density, tile_width, n_procs);
         if (b.complete) {
             break;
@@ -75,15 +77,22 @@ int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_s
             elapsed_time += shift_board(&b, n_procs);
         }
     }
+
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file);
-    // Print details to file
-    // Print details to stdout
+    for (int i = 1; i < argc; i++) {
+        fprintf(stdout, "%s ", argv[i]);
+        fprintf(results_file, "%s ", argv[i]);
+    }
+    fprintf(stdout, "%d %d %.2lf\n", num_steps, b.max_density, elapsed_time);
+    fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
+
     free_board(&b);
     return 0;
 }
 
-int rbs_interactive(int n_procs, int board_width, int tile_width, int max_density, int max_steps, int random_seed)
+int rbs_interactive(int argc, char *argv[], int n_procs, int board_width, int tile_width, int max_density,
+                    int max_steps, int random_seed)
 {
     return 0;
 }
