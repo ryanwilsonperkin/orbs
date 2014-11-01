@@ -90,10 +90,32 @@ double shift_board(board *b, int n_procs)
 
 double shift_red(board *b, int n_procs)
 {
+    int neighbor;
+    for (int i = 0; i < b->width; i++) {
+        for (int j = 0; j < b->width; j++) {
+            neighbor = (j + 1) % b->width;
+            if (b->points[i][j] == 1 && b->points[i][neighbor] == 0) {
+                b->points[i][j] = 0;
+                b->points[i][neighbor] = 1;
+                j++;
+            }
+        }
+    }
     return 0;
 }
 
 double shift_blue(board *b, int n_procs)
 {
+    int neighbor;
+    for (int j = 0; j < b->width; j++) {
+        for (int i = 0; i < b->width; i++) {
+            neighbor = (i + 1) % b->width;
+            if (b->points[i][j] == 2 && b->points[neighbor][j] == 0) {
+                b->points[i][j] = 0;
+                b->points[neighbor][i] = 2;
+                i++;
+            }
+        }
+    }
     return 0;
 }
