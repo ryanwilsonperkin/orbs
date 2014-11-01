@@ -71,10 +71,11 @@ tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
 double check_board(board *b, int max_density, int tile_width, int n_procs)
 {
     tile_result result;
+    int threshold = tile_width * tile_width * max_density / 100;
     for (int i = 0; i < b->width; i += tile_width) {
         for (int j = 0; j < b->width; j += tile_width) {
             result = check_tile(*b, i, j, i + tile_width, j + tile_width);
-            if (result.red > max_density || result.blue > max_density) b->complete = true;
+            if (result.red > threshold || result.blue > threshold) b->complete = true;
         }
     }
     return 0;
