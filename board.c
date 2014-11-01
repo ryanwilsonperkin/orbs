@@ -47,8 +47,36 @@ void print_board(board b, FILE *results_file)
     }
 }
 
+tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
+{
+    tile_result result = {.white = 0, .red = 0, .blue = 0};
+    for (int i = y_start; i < y_end; i++) {
+        for (int j = x_start; j < x_end; j++) {
+            switch (b.points[i][j]) {
+                case 0:
+                    result.white++;
+                    break;
+                case 1:
+                    result.red++;
+                    break;
+                case 2:
+                    result.blue++;
+                    break;
+            }
+        }
+    }
+    return result;
+}
+
 double check_board(board b, int max_density, int tile_width, int n_procs)
 {
+    tile_result result;
+    for (int i = 0; i < b.width; i += tile_width) {
+        for (int j = 0; j < b.width; j += tile_width) {
+            result = check_tile(b, i, j, i + tile_width, j + tile_width);
+            if (result.red > max_density || result.blue > max_density) b.complete = true;
+        }
+    }
     return 0;
 }
 
