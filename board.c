@@ -14,7 +14,7 @@ void print_board(board b, FILE *results_file)
 {
 }
 
-double check_board(board b, int max_density, int n_procs)
+double check_board(board b, int max_density, int tile_width, int n_procs)
 {
     return 0;
 }

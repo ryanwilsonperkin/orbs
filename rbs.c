@@ -68,7 +68,7 @@ int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_s
     double elapsed_time = 0;
     init_board(&b, board_width, random_seed);
     for (int i=0; i < max_steps; i++) {
-        elapsed_time += check_board(b, max_density, n_procs);
+        elapsed_time += check_board(b, max_density, tile_width, n_procs);
         if (b.complete) {
             break;
         } else {
