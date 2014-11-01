@@ -65,14 +65,14 @@ int rbs(int n_procs, int board_width, int tile_width, int max_density, int max_s
 {
     board b;
     FILE *results_file;
-    double elapsed_time;
+    double elapsed_time = 0;
     init_board(&b, board_width, random_seed);
     for (int i=0; i < max_steps; i++) {
-        check_board(b, max_density, n_procs);
+        elapsed_time += check_board(b, max_density, n_procs);
         if (b.complete) {
             break;
         } else {
-            shift_board(&b, n_procs);
+            elapsed_time += shift_board(&b, n_procs);
         }
     }
     results_file = fopen(RESULTS_FILE, "w");
