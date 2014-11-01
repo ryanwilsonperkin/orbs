@@ -29,6 +29,22 @@ void free_board(board *b)
 
 void print_board(board b, FILE *results_file)
 {
+    for (int i = 0; i < b.width; i++) {
+        for (int j = 0; j < b.width; j++) {
+            switch (b.points[i][j]) {
+                case 0:
+                    fprintf(results_file, "%c", WHITE_CHAR);
+                    break;
+                case 1:
+                    fprintf(results_file, "%c", RED_CHAR);
+                    break;
+                case 2:
+                    fprintf(results_file, "%c", BLUE_CHAR);
+                    break;
+            }
+        }
+        fprintf(results_file,"\n");
+    }
 }
 
 double check_board(board b, int max_density, int tile_width, int n_procs)

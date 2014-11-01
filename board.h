@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define WHITE_CHAR ' '
+#define RED_CHAR '>'
+#define BLUE_CHAR 'V'
+
 typedef struct board_
 {
     int **points;
