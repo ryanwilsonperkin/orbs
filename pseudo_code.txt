@@ -1,0 +1,61 @@
+int t; // Thread count, t divides n
+int c; // Percentage for breaking condition
+int size = n/t;
+char board[n][n]; // n x n board of ‘r’, ‘b’, or ‘w’
+char next_board[n][n];
+int condition = t*t*c/100;
+bool found;
+do
+{
+  forall(threadId in (0..t-1))
+  {
+    int offset = threadId * size;
+    for (int y = offset; y < offset + size; y++)
+    {
+      for (int x = offset; x < offset + size; x++)
+      {
+        char neighbor = board[y][(x+1) % n];
+        if (neighbor == 'w')
+        {
+          next_board[y][(x+1)%n] = 'r';
+        }
+        else
+        {
+          next_board[y][x] = 'r';
+        }
+      }
+    }
+    barrier;
+    for (int y = offset; y < offset + size; y++)
+    {
+      for (int x = offset; x < offset + size; x++)
+      {
+        char neighbor1 = board[(y+1)%n][x];
+        char neighbor2 = next_board[(y+1)%n][x];
+        if (neighbor1 != 'b' && neighbor2 == 'w')
+        {
+          next_board[(y+1)%n][x] = 'b';
+        }
+        else
+        {
+          next_board[y][x] = 'b';
+        }
+      }
+    }
+    barrier;
+    int red=0, blue=0;
+    for (int y = offset; y < offset + size; y++)
+    {
+      for (int x = offset; x < offset + size; x++)
+      {
+        board[y][x] = next_board[y][x];
+        next_board[y][x] = 'w';
+        if (board[y][x] == 'r') red++;
+        else if (board[y][x] == 'b') blue++;
+      }
+    }
+    barrier;
+    found =||/(red > condition || blue > condition);
+  }
+}
+while (!found);
