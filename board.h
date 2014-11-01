@@ -24,7 +24,7 @@ typedef struct tile_result_
 } tile_result;
 
 tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end);
-double check_board(board b, int max_density, int tile_width, int n_procs);
+double check_board(board *b, int max_density, int tile_width, int n_procs);
 void free_board(board *b);
 void init_board(board *b, int board_width, int random_seed);
 void print_board(board b, FILE *results_file);

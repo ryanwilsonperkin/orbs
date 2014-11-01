@@ -68,13 +68,13 @@ tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
     return result;
 }
 
-double check_board(board b, int max_density, int tile_width, int n_procs)
+double check_board(board *b, int max_density, int tile_width, int n_procs)
 {
     tile_result result;
-    for (int i = 0; i < b.width; i += tile_width) {
-        for (int j = 0; j < b.width; j += tile_width) {
-            result = check_tile(b, i, j, i + tile_width, j + tile_width);
-            if (result.red > max_density || result.blue > max_density) b.complete = true;
+    for (int i = 0; i < b->width; i += tile_width) {
+        for (int j = 0; j < b->width; j += tile_width) {
+            result = check_tile(*b, i, j, i + tile_width, j + tile_width);
+            if (result.red > max_density || result.blue > max_density) b->complete = true;
         }
     }
     return 0;
