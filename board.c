@@ -21,6 +21,10 @@ void init_board(board *b, int board_width, int random_seed)
 
 void free_board(board *b)
 {
+    for (int i = 0; i < b->width; i++) {
+        free(b->points[i]);
+    }
+    free(b->points);
 }
 
 void print_board(board b, FILE *results_file)
