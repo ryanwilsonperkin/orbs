@@ -1,8 +1,10 @@
 #ifndef RED_BLUE_BOARD_H
 #define RED_BLUE_BOARD_H
 
-#include <stdbool.h>
 #include <stdio.h>
+
+#define TRUE 1
+#define FALSE 0
 
 #define WHITE_CHAR ' '
 #define RED_CHAR '>'
@@ -12,7 +14,7 @@ typedef struct board_
 {
     int **points;
     int width;
-    bool complete;
+    char complete;
     int max_density;
 } board;
 

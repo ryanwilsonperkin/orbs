@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,7 +19,7 @@ void init_board(board *b, int board_width, int random_seed)
         }
     }
     b->width = board_width;
-    b->complete = false;
+    b->complete = FALSE;
     b->max_density = 0;
 }
 
@@ -81,7 +80,7 @@ double check_board(board *b, int max_density, int tile_width, int n_procs)
         for (int j = 0; j < b->width; j += tile_width) {
             result = check_tile(*b, i, j, i + tile_width, j + tile_width);
             if (result.red > threshold || result.blue > threshold) {
-                b->complete = true;
+                b->complete = TRUE;
                 b->max_density = (MAX(result.red, result.blue) * 100) / (tile_width * tile_width);
                 return 0;
             }

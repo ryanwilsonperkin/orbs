@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -6,6 +5,8 @@
 #include "board.h"
 #include "rbs.h"
 
+#define TRUE 1
+#define FALSE 0
 #define RESULTS_FILE "redblue.txt"
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
 
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
     int max_density = 0;
     int max_steps = 0;
     int random_seed = time(NULL);
-    bool interactive = false;
+    char interactive = FALSE;
 
     for (int i = 1; i < argc; i++) {
         switch(argv[i][0]) {
@@ -40,7 +41,7 @@ int main(int argc, char *argv[])
                 random_seed = atoi(argv[i]+1);
                 break;
             case 'i':
-                interactive = true;
+                interactive = TRUE;
                 break;
             default:
                 ERROR("Unrecognized argument.");
