@@ -65,18 +65,19 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
         int random_seed)
 {
     board b;
-    int num_steps;
     FILE *results_file;
+    int num_steps = 0;
     double elapsed_time = 0;
     init_board(&b, board_width, random_seed);
-    for (num_steps = 0; num_steps < max_steps; num_steps++) {
+    do {
         elapsed_time += check_board(&b, max_density, tile_width, n_procs);
         if (b.complete) {
             break;
         } else {
             elapsed_time += shift_board(&b, n_procs);
         }
-    }
+        num_steps++;
+    } while(num_steps <= max_steps);
 
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file);
