@@ -113,7 +113,7 @@ double shift_blue(board *b, int n_procs)
             neighbor = (i + 1) % b->width;
             if (b->points[i][j] == 2 && b->points[neighbor][j] == 0) {
                 b->points[i][j] = 0;
-                b->points[neighbor][i] = 2;
+                b->points[neighbor][j] = 2;
                 i++;
             }
         }
