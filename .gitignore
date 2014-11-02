@@ -1,2 +1,6 @@
-rbs
-redblue.txt
+Debug
+Release
+ipch
+*.opensdf
+*.sdf
+*.suo
