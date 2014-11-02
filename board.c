@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "board.h"
+#include "pthread.h"
 
 #ifdef MAX
 #undef MAX
