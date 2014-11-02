@@ -76,7 +76,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
         elapsed_time += shift_board(&b, n_procs);
         num_steps++;
         elapsed_time += check_board(&b, max_density, tile_width, n_procs);
-    } while(!b.complete && num_steps <= max_steps);
+    } while(!b.complete && num_steps < max_steps);
 
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file);
