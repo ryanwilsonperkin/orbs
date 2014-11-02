@@ -10,6 +10,7 @@
 
 CC = gcc
 CFLAGS = -g -O0 -Wall -std=c99
+ARGS ?= p1 b875 t125 c35 m2000 s3090
 
 all: rbs
 
@@ -21,6 +22,9 @@ rbs.o: rbs.c
 
 board.o: board.c
 	$(CC) $(CFLAGS) -c board.c
+
+run: rbs
+	./rbs ${ARGS}
 
 clean:
 	rm *.o
