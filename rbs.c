@@ -12,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+    int i;
     int n_procs = 0;
     int board_width = 0;
     int tile_width = 0;
@@ -20,7 +21,7 @@ int main(int argc, char *argv[])
     int random_seed = time(NULL);
     char interactive = FALSE;
 
-    for (int i = 1; i < argc; i++) {
+    for (i = 1; i < argc; i++) {
         switch(argv[i][0]) {
             case 'p':
                 n_procs = atoi(argv[i]+1);
@@ -65,6 +66,7 @@ int main(int argc, char *argv[])
 int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, int max_density, int max_steps,
         int random_seed)
 {
+    int i;
     board b;
     FILE *results_file;
     int num_steps = 0;
@@ -78,7 +80,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
 
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file);
-    for (int i = 1; i < argc; i++) {
+    for (i = 1; i < argc; i++) {
         fprintf(stdout, "%s ", argv[i]);
         fprintf(results_file, "%s ", argv[i]);
     }
