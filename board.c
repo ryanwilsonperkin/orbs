@@ -4,6 +4,11 @@
 
 #include "board.h"
 
+#ifdef MAX
+#undef MAX
+#endif  // MAX
+#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+
 void init_board(board *b, int board_width, int random_seed)
 {
     srand(random_seed);
@@ -75,7 +80,11 @@ double check_board(board *b, int max_density, int tile_width, int n_procs)
     for (int i = 0; i < b->width; i += tile_width) {
         for (int j = 0; j < b->width; j += tile_width) {
             result = check_tile(*b, i, j, i + tile_width, j + tile_width);
-            if (result.red > threshold || result.blue > threshold) b->complete = true;
+            if (result.red > threshold || result.blue > threshold) {
+                b->complete = true;
+                b->max_density = MAX(result.red, result.blue) / (tile_width * tile_width) * 100;
+                return 0;
+            }
         }
     }
     return 0;
