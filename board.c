@@ -13,9 +13,9 @@ void init_board(board *b, int board_width, int random_seed)
 {
     int i,j;
     srand(random_seed);
-    b->points = malloc(board_width * sizeof(int *));
+    b->points = (int **) malloc(board_width * sizeof(int *));
     for (i = 0; i < board_width; i++) {
-        b->points[i] = malloc(board_width * sizeof(int));
+        b->points[i] = (int *) malloc(board_width * sizeof(int));
         for (j = 0; j < board_width; j++) {
             b->points[i][j] = rand() % 3;
         }
