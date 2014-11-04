@@ -4,6 +4,7 @@
 
 #include "board.h"
 #include "rbs.h"
+#include "wallclock.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -70,13 +71,16 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     board b;
     FILE *results_file;
     int num_steps = 0;
-    double elapsed_time = 0;
+    double elapsed_time;
+
+    StartTime();
     init_board(&b, board_width, random_seed);
     do {
-        elapsed_time += shift_board(&b, n_procs);
+        shift_board(&b, n_procs);
         num_steps++;
-        elapsed_time += check_board(&b, max_density, tile_width, n_procs);
+        check_board(&b, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);
+    elapsed_time = EndTime();
 
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file);
