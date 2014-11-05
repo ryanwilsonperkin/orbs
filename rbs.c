@@ -75,23 +75,33 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     board b;
     FILE *results_file;
     pthread_t *threads;
-    int n_threads, num_steps = 0;
+    check_tiles_threaded_tasks *check_thread_tasks;
+    int n_threads, n_check_tasks, num_steps = 0;
+    int max_check_thread_tasks;
     double elapsed_time;
 
     StartTime();
     // Initialization of board, threads, and memory.
+    init_board(&b, board_width, random_seed);
     n_threads = n_procs - 1;
+    n_check_tasks = (b.width - tile_width) * (b.width - tile_width);
+    max_check_thread_tasks = (n_check_tasks / n_threads) + 1;
     if (n_threads) {
         threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
+        check_thread_tasks = (check_tiles_threaded_tasks *) malloc(n_threads * sizeof(check_tiles_threaded_tasks));
+        for (i = 0; i < n_threads; i++) {
+            check_thread_tasks[i].args_list = (check_tile_args *) malloc(max_check_thread_tasks * sizeof(check_tile_args));
+            check_thread_tasks[i].results = (tile_result *) malloc(max_check_thread_tasks * sizeof(tile_result));
+        }
     } else {
         threads = NULL;
+        check_thread_tasks = NULL;
     }
 
-    init_board(&b, board_width, random_seed);
     do {
         shift_board_threaded(&b, threads, n_procs);
         num_steps++;
-        check_board_threaded(&b, threads, max_density, tile_width, n_procs);
+        check_board_threaded(&b, threads, check_thread_tasks, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);
     elapsed_time = EndTime();
 
@@ -104,8 +114,15 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     fprintf(stdout, "%d %d %.2lf\n", num_steps, b.max_density, elapsed_time);
     fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
 
-    free_board(&b);
+    if (n_threads) {
+        for (i = 0; i < n_threads; i++) {
+            free(check_thread_tasks[i].args_list);
+            free(check_thread_tasks[i].results);
+        }
+    }
+    free(check_thread_tasks);
     free(threads);
+    free_board(&b);
     _CrtDumpMemoryLeaks();
     return 0;
 }
