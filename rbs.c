@@ -81,11 +81,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     do {
         shift_board_threaded(&b, n_procs);
         num_steps++;
-        if (n_procs == 1) {
-            check_board(&b, max_density, tile_width, n_procs);
-        } else {
-            check_board_threaded(&b, max_density, tile_width, n_procs);
-        }
+        check_board_threaded(&b, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);
     elapsed_time = EndTime();
 

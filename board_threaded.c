@@ -34,6 +34,11 @@ void check_board_threaded(board *b, int max_density, int tile_width, int n_procs
     pthread_t *threads;
     check_tiles_threaded_tasks *thread_tasks;
 
+    // Switch to serial version if single processor.
+    if (n_procs == 1) {
+        check_board(b, max_density, tile_width);
+        return;
+    }
     // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
     n_tasks = (b->width - tile_width) * (b->width - tile_width);
     n_threads = n_procs - 1;
