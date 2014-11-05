@@ -110,3 +110,118 @@ void check_board_threaded(board *b, int max_density, int tile_width, int n_procs
     free(thread_tasks);
     return;
 }
+
+typedef struct shift_args_
+{
+    board *b;
+    int *indices;
+    int n_indices;
+} shift_args;
+
+void * shift_columns_threaded(void * args_)
+{
+    int i;
+    shift_args *args = (shift_args *) args_;
+    for (i = 0; i < args->n_indices; i++) {
+        shift_column(args->b, args->indices[i]);
+    }
+    pthread_exit(NULL);
+    return NULL;
+}
+
+void shift_blue_threaded(board *b, int n_procs)
+{
+    int i, j, k, rc;
+    int n_tasks, n_threads, max_thread_tasks;
+    pthread_t *threads;
+    shift_args *thread_tasks;
+
+    // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
+    n_tasks = b->width;
+    n_threads = n_procs - 1;
+    max_thread_tasks = (n_tasks / n_threads) + 1;
+
+    // Init memory for threads and thread_tasks.
+    threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
+    thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
+
+    // Init and assign thread_tasks indices.
+    for (i = 0; i < n_threads; i++) {
+        thread_tasks[i].indices = (int *) malloc(max_thread_tasks * sizeof(int));
+        k = 0;
+        for (j = i; j < n_tasks; j += n_threads) {
+            thread_tasks[i].indices[k] = j;
+            k++;
+        }
+        thread_tasks[i].n_indices = k;
+        thread_tasks[i].b = b;
+
+        // Call thread with assigned tasks.
+        rc = pthread_create(&threads[i], NULL, shift_columns_threaded, (void *) &thread_tasks[i]);
+    }
+
+    for (i = 0; i < n_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Free memory.
+    for (i = 0; i < n_threads; i++) {
+        free(thread_tasks[i].indices);
+    }
+    free(threads);
+    free(thread_tasks);
+}
+
+void * shift_rows_threaded(void * args_)
+{
+    int i;
+    shift_args *args = (shift_args *) args_;
+    for (i = 0; i < args->n_indices; i++) {
+        shift_column(args->b, args->indices[i]);
+    }
+    pthread_exit(NULL);
+    return NULL;
+}
+
+void shift_red_threaded(board *b, int n_procs)
+{
+    int i, j, k, rc;
+    int n_tasks, n_threads, max_thread_tasks;
+    pthread_t *threads;
+    shift_args *thread_tasks;
+
+    // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
+    n_tasks = b->width;
+    n_threads = n_procs - 1;
+    max_thread_tasks = (n_tasks / n_threads) + 1;
+
+    // Init memory for threads and thread_tasks.
+    threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
+    thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
+
+    // Init and assign thread_tasks indices.
+    for (i = 0; i < n_threads; i++) {
+        thread_tasks[i].indices = (int *) malloc(max_thread_tasks * sizeof(int));
+        k = 0;
+        for (j = i; j < n_tasks; j += n_threads) {
+            thread_tasks[i].indices[k] = j;
+            k++;
+        }
+        thread_tasks[i].n_indices = k;
+        thread_tasks[i].b = b;
+
+        // Call thread with assigned tasks.
+        rc = pthread_create(&threads[i], NULL, shift_rows_threaded, (void *) &thread_tasks[i]);
+    }
+
+    for (i = 0; i < n_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Free memory.
+    for (i = 0; i < n_threads; i++) {
+        free(thread_tasks[i].indices);
+    }
+    free(threads);
+    free(thread_tasks);
+}
