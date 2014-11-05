@@ -1,5 +1,4 @@
 #define _CRTDBG_MAP_ALLOC
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,6 +7,7 @@
 #include "board.h"
 #include "board_threaded.h"
 #include "rbs.h"
+#include "pthread.h"
 #include "wallclock.h"
 
 #define TRUE 1
@@ -89,7 +89,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
 
     init_board(&b, board_width, random_seed);
     do {
-        shift_board_threaded(&b, n_procs);
+        shift_board_threaded(&b, threads, n_procs);
         num_steps++;
         check_board_threaded(&b, threads, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);

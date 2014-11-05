@@ -1,9 +1,8 @@
-#include <pthread.h>
 #include <stdlib.h>
-#include <windows.h>
 
 #include "board_threaded.h"
 #include "board.h"
+#include "pthread.h"
 
 #ifdef MAX
 #undef MAX
@@ -71,6 +70,10 @@ void check_board_threaded(board *b, pthread_t *threads, int max_density, int til
     // Run threads.
     for (i = 0; i < n_threads; i++) {
         rc = pthread_create(&threads[i], NULL, check_tiles_threaded, (void *) &thread_tasks[i]);
+        if (rc){
+            printf("ERROR; return code from pthread_create() is %d\n", rc);
+            exit(-1);
+        }
     }
 
     // Wait on each thread unless results surpass threshold.
@@ -110,11 +113,10 @@ void * shift_columns_threaded(void * args_)
     return NULL;
 }
 
-void shift_blue_threaded(board *b, int n_procs)
+void shift_blue_threaded(board *b, pthread_t *threads, int n_procs)
 {
     int i, j, k, rc;
     int n_tasks, n_threads, max_thread_tasks;
-    pthread_t *threads;
     shift_args *thread_tasks;
 
     // Switch to serial version if single processor.
@@ -129,7 +131,6 @@ void shift_blue_threaded(board *b, int n_procs)
     max_thread_tasks = (n_tasks / n_threads) + 1;
 
     // Init memory for threads and thread_tasks.
-    threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
     thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
 
     // Init and assign thread_tasks indices.
@@ -145,6 +146,10 @@ void shift_blue_threaded(board *b, int n_procs)
 
         // Call thread with assigned tasks.
         rc = pthread_create(&threads[i], NULL, shift_columns_threaded, (void *) &thread_tasks[i]);
+        if (rc){
+            printf("ERROR; return code from pthread_create() is %d\n", rc);
+            exit(-1);
+        }
     }
 
     for (i = 0; i < n_threads; i++) {
@@ -155,7 +160,6 @@ void shift_blue_threaded(board *b, int n_procs)
     for (i = 0; i < n_threads; i++) {
         free(thread_tasks[i].indices);
     }
-    free(threads);
     free(thread_tasks);
 }
 
@@ -170,11 +174,10 @@ void * shift_rows_threaded(void * args_)
     return NULL;
 }
 
-void shift_red_threaded(board *b, int n_procs)
+void shift_red_threaded(board *b, pthread_t *threads, int n_procs)
 {
     int i, j, k, rc;
     int n_tasks, n_threads, max_thread_tasks;
-    pthread_t *threads;
     shift_args *thread_tasks;
 
     // Switch to serial version if single processor.
@@ -189,7 +192,6 @@ void shift_red_threaded(board *b, int n_procs)
     max_thread_tasks = (n_tasks / n_threads) + 1;
 
     // Init memory for threads and thread_tasks.
-    threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
     thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
 
     // Init and assign thread_tasks indices.
@@ -205,6 +207,10 @@ void shift_red_threaded(board *b, int n_procs)
 
         // Call thread with assigned tasks.
         rc = pthread_create(&threads[i], NULL, shift_rows_threaded, (void *) &thread_tasks[i]);
+        if (rc){
+            printf("ERROR; return code from pthread_create() is %d\n", rc);
+            exit(-1);
+        }
     }
 
     for (i = 0; i < n_threads; i++) {
@@ -215,12 +221,11 @@ void shift_red_threaded(board *b, int n_procs)
     for (i = 0; i < n_threads; i++) {
         free(thread_tasks[i].indices);
     }
-    free(threads);
     free(thread_tasks);
 }
 
-void shift_board_threaded(board *b, int n_procs)
+void shift_board_threaded(board *b, pthread_t *threads, int n_procs)
 {
-    shift_red_threaded(b, n_procs);
-    shift_blue_threaded(b, n_procs);
+    shift_red_threaded(b, threads, n_procs);
+    shift_blue_threaded(b, threads, n_procs);
 }
