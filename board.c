@@ -78,26 +78,22 @@ tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
     return result;
 }
 
-void check_board(board *b, int max_density, int tile_width, int n_procs)
+void check_board(board *b, int max_density, int tile_width)
 {
     int i,j;
     int threshold;
     tile_result result;
 
-    if (n_procs == 1) {
-        threshold = tile_width * tile_width * max_density / 100;
-        for (i = 0; i < b->width; i += tile_width) {
-            for (j = 0; j < b->width; j += tile_width) {
-                result = check_tile(*b, j, i, j + tile_width, i + tile_width);
-                if (result.red > threshold || result.blue > threshold) {
-                    b->complete = TRUE;
-                    b->max_density = (MAX(result.red, result.blue) * 100) / (tile_width * tile_width);
-                    return;
-                }
+    threshold = tile_width * tile_width * max_density / 100;
+    for (i = 0; i < b->width; i += tile_width) {
+        for (j = 0; j < b->width; j += tile_width) {
+            result = check_tile(*b, j, i, j + tile_width, i + tile_width);
+            if (result.red > threshold || result.blue > threshold) {
+                b->complete = TRUE;
+                b->max_density = (MAX(result.red, result.blue) * 100) / (tile_width * tile_width);
+                return;
             }
         }
-    } else {
-        check_board_threaded(b, max_density, tile_width, n_procs);
     }
 }
 
