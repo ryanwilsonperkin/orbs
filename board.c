@@ -109,34 +109,50 @@ void shift_board(board *b, int n_procs)
 
 void shift_red(board *b, int n_procs)
 {
-    int i,j;
-    int neighbor;
+    int i;
+    if (n_procs == 1) {
+        for (i = 0; i < b->width; i++) {
+            shift_row(b, i);
+        }
+    } else {
+        shift_red_threaded(b, n_procs);
+    }
+}
 
-    for (i = 0; i < b->width; i++) {
-        for (j = 0; j < b->width; j++) {
-            neighbor = (j + 1) % b->width;
-            if (b->points[i][j] == 1 && b->points[i][neighbor] == 0) {
-                b->points[i][j] = 0;
-                b->points[i][neighbor] = 1;
-                j++;
-            }
+void shift_row(board *b, int index)
+{
+    int j, neighbor;
+    for (j = 0; j < b->width; j++) {
+        neighbor = (j + 1) % b->width;
+        if (b->points[index][j] == 1 && b->points[index][neighbor] == 0) {
+            b->points[index][j] = 0;
+            b->points[index][neighbor] = 1;
+            j++;
         }
     }
 }
 
 void shift_blue(board *b, int n_procs)
 {
-    int i,j;
-    int neighbor;
+    int j;
+    if (n_procs == 1) {
+        for (j = 0; j < b->width; j++) {
+            shift_column(b, j);
+        }
+    } else {
+        shift_blue_threaded(b, n_procs);
+    }
+}
 
-    for (j = 0; j < b->width; j++) {
-        for (i = 0; i < b->width; i++) {
-            neighbor = (i + 1) % b->width;
-            if (b->points[i][j] == 2 && b->points[neighbor][j] == 0) {
-                b->points[i][j] = 0;
-                b->points[neighbor][j] = 2;
-                i++;
-            }
+void shift_column(board *b, int index)
+{
+    int i, neighbor;
+    for (i = 0; i < b->width; i++) {
+        neighbor = (i + 1) % b->width;
+        if (b->points[i][index] == 2 && b->points[neighbor][index] == 0) {
+            b->points[i][index] = 0;
+            b->points[neighbor][index] = 2;
+            i++;
         }
     }
 }

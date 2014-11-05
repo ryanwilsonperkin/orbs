@@ -33,5 +33,7 @@ void print_board(board b, FILE *results_file);
 void shift_board(board *b, int n_procs);
 void shift_red(board *b, int n_procs);
 void shift_blue(board *b, int n_procs);
+void shift_row(board *b, int index);
+void shift_column(board *b, int index);
 
 #endif  // RED_BLUE_BOARD_H
