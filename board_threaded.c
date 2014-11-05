@@ -204,3 +204,9 @@ void shift_red_threaded(board *b, int n_procs)
     free(threads);
     free(thread_tasks);
 }
+
+void shift_board_threaded(board *b, int n_procs)
+{
+    shift_red_threaded(b, n_procs);
+    shift_blue_threaded(b, n_procs);
+}
