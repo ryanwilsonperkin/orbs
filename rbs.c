@@ -1,8 +1,6 @@
-#define _CRTDBG_MAP_ALLOC
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <crtdbg.h>
 
 #include "board.h"
 #include "board_threaded.h"
@@ -76,8 +74,9 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     FILE *results_file;
     pthread_t *threads;
     check_tiles_threaded_tasks *check_thread_tasks;
-    int n_threads, n_check_tasks, num_steps = 0;
-    int max_check_thread_tasks;
+    shift_args *shift_thread_tasks;
+    int n_threads, n_check_tasks, n_shift_tasks, num_steps = 0;
+    int max_check_thread_tasks, max_shift_thread_tasks;
     double elapsed_time;
 
     StartTime();
@@ -85,21 +84,26 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     init_board(&b, board_width, random_seed);
     n_threads = n_procs - 1;
     n_check_tasks = (b.width - tile_width) * (b.width - tile_width);
+    n_shift_tasks = b.width;
     max_check_thread_tasks = (n_check_tasks / n_threads) + 1;
+    max_shift_thread_tasks = (n_shift_tasks / n_threads) + 1;
     if (n_threads) {
         threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
         check_thread_tasks = (check_tiles_threaded_tasks *) malloc(n_threads * sizeof(check_tiles_threaded_tasks));
+        shift_thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
         for (i = 0; i < n_threads; i++) {
             check_thread_tasks[i].args_list = (check_tile_args *) malloc(max_check_thread_tasks * sizeof(check_tile_args));
             check_thread_tasks[i].results = (tile_result *) malloc(max_check_thread_tasks * sizeof(tile_result));
+            shift_thread_tasks[i].indices = (int *) malloc(max_shift_thread_tasks * sizeof(int));
         }
     } else {
         threads = NULL;
         check_thread_tasks = NULL;
+        shift_thread_tasks = NULL;
     }
 
     do {
-        shift_board_threaded(&b, threads, n_procs);
+        shift_board_threaded(&b, threads, shift_thread_tasks, n_procs);
         num_steps++;
         check_board_threaded(&b, threads, check_thread_tasks, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);
@@ -118,12 +122,13 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
         for (i = 0; i < n_threads; i++) {
             free(check_thread_tasks[i].args_list);
             free(check_thread_tasks[i].results);
+            free(shift_thread_tasks[i].indices);
         }
+        free(shift_thread_tasks);
+        free(check_thread_tasks);
+        free(threads);
     }
-    free(check_thread_tasks);
-    free(threads);
     free_board(&b);
-    _CrtDumpMemoryLeaks();
     return 0;
 }
 

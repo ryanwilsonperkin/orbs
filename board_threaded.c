@@ -101,11 +101,10 @@ void * shift_columns_threaded(void * args_)
     return NULL;
 }
 
-void shift_blue_threaded(board *b, pthread_t *threads, int n_procs)
+void shift_blue_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs)
 {
     int i, j, k, rc;
     int n_tasks, n_threads, max_thread_tasks;
-    shift_args *thread_tasks;
 
     // Switch to serial version if single processor.
     if (n_procs == 1) {
@@ -118,12 +117,8 @@ void shift_blue_threaded(board *b, pthread_t *threads, int n_procs)
     n_threads = n_procs - 1;
     max_thread_tasks = (n_tasks / n_threads) + 1;
 
-    // Init memory for threads and thread_tasks.
-    thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
-
     // Init and assign thread_tasks indices.
     for (i = 0; i < n_threads; i++) {
-        thread_tasks[i].indices = (int *) malloc(max_thread_tasks * sizeof(int));
         k = 0;
         for (j = i; j < n_tasks; j += n_threads) {
             thread_tasks[i].indices[k] = j;
@@ -143,12 +138,6 @@ void shift_blue_threaded(board *b, pthread_t *threads, int n_procs)
     for (i = 0; i < n_threads; i++) {
         pthread_join(threads[i], NULL);
     }
-
-    // Free memory.
-    for (i = 0; i < n_threads; i++) {
-        free(thread_tasks[i].indices);
-    }
-    free(thread_tasks);
 }
 
 void * shift_rows_threaded(void * args_)
@@ -162,11 +151,10 @@ void * shift_rows_threaded(void * args_)
     return NULL;
 }
 
-void shift_red_threaded(board *b, pthread_t *threads, int n_procs)
+void shift_red_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs)
 {
     int i, j, k, rc;
     int n_tasks, n_threads, max_thread_tasks;
-    shift_args *thread_tasks;
 
     // Switch to serial version if single processor.
     if (n_procs == 1) {
@@ -179,12 +167,8 @@ void shift_red_threaded(board *b, pthread_t *threads, int n_procs)
     n_threads = n_procs - 1;
     max_thread_tasks = (n_tasks / n_threads) + 1;
 
-    // Init memory for threads and thread_tasks.
-    thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
-
     // Init and assign thread_tasks indices.
     for (i = 0; i < n_threads; i++) {
-        thread_tasks[i].indices = (int *) malloc(max_thread_tasks * sizeof(int));
         k = 0;
         for (j = i; j < n_tasks; j += n_threads) {
             thread_tasks[i].indices[k] = j;
@@ -204,16 +188,10 @@ void shift_red_threaded(board *b, pthread_t *threads, int n_procs)
     for (i = 0; i < n_threads; i++) {
         pthread_join(threads[i], NULL);
     }
-
-    // Free memory.
-    for (i = 0; i < n_threads; i++) {
-        free(thread_tasks[i].indices);
-    }
-    free(thread_tasks);
 }
 
-void shift_board_threaded(board *b, pthread_t *threads, int n_procs)
+void shift_board_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs)
 {
-    shift_red_threaded(b, threads, n_procs);
-    shift_blue_threaded(b, threads, n_procs);
+    shift_red_threaded(b, threads, thread_tasks, n_procs);
+    shift_blue_threaded(b, threads, thread_tasks, n_procs);
 }
