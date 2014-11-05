@@ -80,7 +80,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     init_board(&b, board_width, random_seed);
     do {
         if (n_procs == 1) {
-            shift_board(&b, n_procs);
+            shift_board(&b);
         } else {
             shift_board_threaded(&b, n_procs);
         }

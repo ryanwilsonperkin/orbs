@@ -101,21 +101,17 @@ void check_board(board *b, int max_density, int tile_width, int n_procs)
     }
 }
 
-void shift_board(board *b, int n_procs)
+void shift_board(board *b)
 {
-    shift_red(b, n_procs);
-    shift_blue(b, n_procs);
+    shift_red(b);
+    shift_blue(b);
 }
 
-void shift_red(board *b, int n_procs)
+void shift_red(board *b)
 {
     int i;
-    if (n_procs == 1) {
-        for (i = 0; i < b->width; i++) {
-            shift_row(b, i);
-        }
-    } else {
-        shift_red_threaded(b, n_procs);
+    for (i = 0; i < b->width; i++) {
+        shift_row(b, i);
     }
 }
 
@@ -140,15 +136,11 @@ void shift_row(board *b, int index)
     }
 }
 
-void shift_blue(board *b, int n_procs)
+void shift_blue(board *b)
 {
     int j;
-    if (n_procs == 1) {
-        for (j = 0; j < b->width; j++) {
-            shift_column(b, j);
-        }
-    } else {
-        shift_blue_threaded(b, n_procs);
+    for (j = 0; j < b->width; j++) {
+        shift_column(b, j);
     }
 }
 
