@@ -24,6 +24,13 @@ typedef struct check_tiles_threaded_tasks_
     int n_tasks;
 } check_tiles_threaded_tasks;
 
+typedef struct shift_args_
+{
+    board *b;
+    int *indices;
+    int n_indices;
+} shift_args;
+
 void * check_tiles_threaded(void *t)
 {
     int i;
@@ -110,13 +117,6 @@ void check_board_threaded(board *b, int max_density, int tile_width, int n_procs
     free(thread_tasks);
     return;
 }
-
-typedef struct shift_args_
-{
-    board *b;
-    int *indices;
-    int n_indices;
-} shift_args;
 
 void * shift_columns_threaded(void * args_)
 {
