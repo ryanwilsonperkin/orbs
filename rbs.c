@@ -1,6 +1,8 @@
+#define _CRTDBG_MAP_ALLOC
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <crtdbg.h>
 
 #include "board.h"
 #include "rbs.h"
@@ -92,6 +94,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
 
     free_board(&b);
+    _CrtDumpMemoryLeaks();
     return 0;
 }
 
