@@ -115,6 +115,12 @@ void shift_blue_threaded(board *b, int n_procs)
     pthread_t *threads;
     shift_args *thread_tasks;
 
+    // Switch to serial version if single processor.
+    if (n_procs == 1) {
+        shift_blue(b);
+        return;
+    }
+
     // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
     n_tasks = b->width;
     n_threads = n_procs - 1;
@@ -168,6 +174,12 @@ void shift_red_threaded(board *b, int n_procs)
     int n_tasks, n_threads, max_thread_tasks;
     pthread_t *threads;
     shift_args *thread_tasks;
+
+    // Switch to serial version if single processor.
+    if (n_procs == 1) {
+        shift_red(b);
+        return;
+    }
 
     // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
     n_tasks = b->width;
