@@ -88,7 +88,7 @@ void check_board(board *b, int max_density, int tile_width, int n_procs)
         threshold = tile_width * tile_width * max_density / 100;
         for (i = 0; i < b->width; i += tile_width) {
             for (j = 0; j < b->width; j += tile_width) {
-                result = check_tile(*b, i, j, i + tile_width, j + tile_width);
+                result = check_tile(*b, j, i, j + tile_width, i + tile_width);
                 if (result.red > threshold || result.blue > threshold) {
                     b->complete = TRUE;
                     b->max_density = (MAX(result.red, result.blue) * 100) / (tile_width * tile_width);
@@ -121,14 +121,22 @@ void shift_red(board *b, int n_procs)
 
 void shift_row(board *b, int index)
 {
-    int j, neighbor;
-    for (j = 0; j < b->width; j++) {
-        neighbor = (j + 1) % b->width;
-        if (b->points[index][j] == 1 && b->points[index][neighbor] == 0) {
+    int j, init_first, init_last;
+    init_first = b->points[index][0];
+    init_last = b->points[index][b->width - 1];
+    
+    for (j = 0; j < (b->width - 1); j++) {
+        if (b->points[index][j] == 1 && b->points[index][j+1] == 0) {
             b->points[index][j] = 0;
-            b->points[index][neighbor] = 1;
+            b->points[index][j+1] = 1;
             j++;
         }
+    }
+
+    if ((b->points[index][b->width - 1] == 1 && init_last == 1) &&
+            (b->points[index][0] == 0 && init_first == 0)) {
+        b->points[index][b->width - 1] = 0;
+        b->points[index][0] = 1;
     }
 }
 
@@ -146,13 +154,21 @@ void shift_blue(board *b, int n_procs)
 
 void shift_column(board *b, int index)
 {
-    int i, neighbor;
-    for (i = 0; i < b->width; i++) {
-        neighbor = (i + 1) % b->width;
-        if (b->points[i][index] == 2 && b->points[neighbor][index] == 0) {
+    int i, init_first, init_last;
+    init_first = b->points[0][index];
+    init_last = b->points[b->width - 1][index];
+
+    for (i = 0; i < (b->width - 1); i++) {
+        if (b->points[i][index] == 2 && b->points[i+1][index] == 0) {
             b->points[i][index] = 0;
-            b->points[neighbor][index] = 2;
+            b->points[i+1][index] = 2;
             i++;
         }
+    }
+
+    if ((b->points[b->width - 1][index] == 2 && init_last == 2) && 
+            (b->points[0][index] == 0 && init_first == 0)) {
+        b->points[b->width - 1][index] = 0;
+        b->points[0][index] = 2;
     }
 }
