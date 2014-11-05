@@ -26,12 +26,11 @@ void * check_tiles_threaded(void *t)
     return NULL;
 }
 
-void check_board_threaded(board *b, int max_density, int tile_width, int n_procs)
+void check_board_threaded(board *b, pthread_t *threads, int max_density, int tile_width, int n_procs)
 {
     int i, j, rc, cur_thread;
     int threshold;
     int n_threads, n_tasks, max_thread_tasks;
-    pthread_t *threads;
     check_tiles_threaded_tasks *thread_tasks;
 
     // Switch to serial version if single processor.
@@ -45,7 +44,6 @@ void check_board_threaded(board *b, int max_density, int tile_width, int n_procs
     max_thread_tasks = (n_tasks / n_threads) + 1;
 
     // Init memory for threads and thread_tasks.
-    threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
     thread_tasks = (check_tiles_threaded_tasks *) malloc(n_threads * sizeof(check_tiles_threaded_tasks));
 
     // Init thread_tasks fields.
@@ -97,7 +95,6 @@ void check_board_threaded(board *b, int max_density, int tile_width, int n_procs
         free(thread_tasks[i].args_list);
         free(thread_tasks[i].results);
     }
-    free(threads);
     free(thread_tasks);
     return;
 }

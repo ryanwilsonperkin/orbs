@@ -1,4 +1,5 @@
 #define _CRTDBG_MAP_ALLOC
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -73,15 +74,24 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     int i;
     board b;
     FILE *results_file;
-    int num_steps = 0;
+    pthread_t *threads;
+    int n_threads, num_steps = 0;
     double elapsed_time;
 
     StartTime();
+    // Initialization of board, threads, and memory.
+    n_threads = n_procs - 1;
+    if (n_threads) {
+        threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
+    } else {
+        threads = NULL;
+    }
+
     init_board(&b, board_width, random_seed);
     do {
         shift_board_threaded(&b, n_procs);
         num_steps++;
-        check_board_threaded(&b, max_density, tile_width, n_procs);
+        check_board_threaded(&b, threads, max_density, tile_width, n_procs);
     } while(!b.complete && num_steps < max_steps);
     elapsed_time = EndTime();
 
@@ -95,6 +105,7 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
 
     free_board(&b);
+    free(threads);
     _CrtDumpMemoryLeaks();
     return 0;
 }
