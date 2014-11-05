@@ -5,6 +5,7 @@
 #include <crtdbg.h>
 
 #include "board.h"
+#include "board_threaded.h"
 #include "rbs.h"
 #include "wallclock.h"
 
@@ -78,9 +79,17 @@ int rbs(int argc, char *argv[], int n_procs, int board_width, int tile_width, in
     StartTime();
     init_board(&b, board_width, random_seed);
     do {
-        shift_board(&b, n_procs);
+        if (n_procs == 1) {
+            shift_board(&b, n_procs);
+        } else {
+            shift_board_threaded(&b, n_procs);
+        }
         num_steps++;
-        check_board(&b, max_density, tile_width, n_procs);
+        if (n_procs == 1) {
+            check_board(&b, max_density, tile_width, n_procs);
+        } else {
+            check_board_threaded(&b, max_density, tile_width, n_procs);
+        }
     } while(!b.complete && num_steps < max_steps);
     elapsed_time = EndTime();
 
