@@ -177,7 +177,7 @@ void * shift_rows_threaded(void * args_)
     int i;
     shift_args *args = (shift_args *) args_;
     for (i = 0; i < args->n_indices; i++) {
-        shift_column(args->b, args->indices[i]);
+        shift_row(args->b, args->indices[i]);
     }
     pthread_exit(NULL);
     return NULL;
