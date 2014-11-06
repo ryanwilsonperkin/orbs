@@ -4,6 +4,7 @@
 #include "board.h"
 #include "board_threaded.h"
 #include "pthread.h"
+#include "putcolour.h"
 
 #ifdef MAX
 #undef MAX
@@ -35,21 +36,31 @@ void free_board(board *b)
     free(b->points);
 }
 
-void print_board(board b, FILE *results_file)
+void print_board(board b, FILE *results_file, char colour_mode)
 {
     int i,j;
+    char c;
+    enum COL_MODE colour;
     for (i = 0; i < b.width; i++) {
         for (j = 0; j < b.width; j++) {
             switch (b.points[i][j]) {
                 case 0:
-                    fprintf(results_file, "%c", WHITE_CHAR);
+                    colour = PC_WHITE;
+                    c = WHITE_CHAR;
                     break;
                 case 1:
-                    fprintf(results_file, "%c", RED_CHAR);
+                    colour = PC_RED;
+                    c = RED_CHAR;
                     break;
                 case 2:
-                    fprintf(results_file, "%c", BLUE_CHAR);
+                    colour = PC_BLUE;
+                    c = BLUE_CHAR;
                     break;
+            }
+            if (colour_mode) {
+                putcolour(colour, &c, 1);
+            } else {
+                fprintf(results_file, "%c", c);
             }
         }
         fprintf(results_file,"\n");

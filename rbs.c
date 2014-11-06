@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     }
 
     results_file = fopen(RESULTS_FILE, "w");
-    print_board(b, results_file);
+    print_board(b, results_file, FALSE);
     for (i = 1; i < argc; i++) {
         fprintf(stdout, "%s ", argv[i]);
         fprintf(results_file, "%s ", argv[i]);
@@ -170,7 +170,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             printf("Invalid character.\n");
         }
         check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
-        print_board(*b, stdout);
+        print_board(*b, stdout, TRUE);
     } while (!b->complete && n_steps < max_steps);
     return n_steps;
     return 0;

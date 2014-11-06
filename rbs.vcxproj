@@ -70,11 +70,13 @@
   <ItemGroup>
     <ClCompile Include="board.c" />
     <ClCompile Include="board_threaded.c" />
+    <ClCompile Include="putcolour.c" />
     <ClCompile Include="rbs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
     <ClInclude Include="board_threaded.h" />
+    <ClInclude Include="putcolour.h" />
     <ClInclude Include="rbs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
