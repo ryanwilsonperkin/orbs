@@ -25,7 +25,8 @@ void * check_tiles_threaded(void *t)
     return NULL;
 }
 
-void check_board_threaded(board *b, pthread_t *threads, check_tiles_threaded_tasks *thread_tasks, int max_density, int tile_width, int n_procs)
+void check_board_threaded(board *b, pthread_t *threads, check_tiles_threaded_tasks *thread_tasks, int max_density,
+                          int tile_width, int n_procs)
 {
     int i, j, rc, cur_thread;
     int threshold;

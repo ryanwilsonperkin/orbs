@@ -13,7 +13,8 @@
 #define RESULTS_FILE "redblue.txt"
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
 
-void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int *tile_width, int *max_density, int *max_steps, int *random_seed, char *interactive)
+void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int *tile_width, int *max_density,
+                    int *max_steps, int *random_seed, char *interactive)
 {
     int i;
     for (i = 1; i < argc; i++) {
@@ -66,7 +67,8 @@ int main(int argc, char *argv[])
     shift_args *shift_thread_tasks;
 
     StartTime();
-    parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed, &interactive);
+    parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed,
+                   &interactive);
     // Initialization of board, threads, and memory.
     init_board(&b, board_width, random_seed);
     n_threads = n_procs - 1;
@@ -90,9 +92,11 @@ int main(int argc, char *argv[])
     }
 
     if (interactive) {
-        num_steps = rbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
+        num_steps = rbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width,
+                                    max_density, max_steps);
     } else {
-        num_steps = rbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
+        num_steps = rbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+                        max_steps);
     }
 
     results_file = fopen(RESULTS_FILE, "w");
@@ -119,7 +123,8 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density, int max_steps)
+int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
+        int n_procs, int tile_width, int max_density, int max_steps)
 {
     int num_steps = 0;
     do {
@@ -130,7 +135,9 @@ int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tile
     return num_steps;
 }
 
-int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density, int max_steps)
+int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
+                    check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density,
+                    int max_steps)
 {
     char c;
     int additional_steps, result;
@@ -144,7 +151,8 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             n_steps++;
         } else if (c == '#') {
             scanf("%d", &additional_steps);
-            result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, additional_steps);
+            result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+                         additional_steps);
             n_half_steps += 2 * result;
             n_steps += result;
             getchar();
@@ -163,7 +171,8 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
                 n_half_steps++;
                 n_steps++;
             }
-            return n_steps + rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps - n_steps);
+            return n_steps + rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+                                 max_steps - n_steps);
         } else if (c == 'x') {
             break;
         } else {

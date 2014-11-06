@@ -25,7 +25,8 @@ typedef struct shift_args_
     int n_indices;
 } shift_args;
 
-void check_board_threaded(board *b, pthread_t *threads, check_tiles_threaded_tasks *thread_tasks, int max_density, int tile_width, int n_procs);
+void check_board_threaded(board *b, pthread_t *threads, check_tiles_threaded_tasks *thread_tasks, int max_density,
+                          int tile_width, int n_procs);
 void shift_board_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs);
 void shift_blue_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs);
 void shift_red_threaded(board *b, pthread_t *threads, shift_args *thread_tasks, int n_procs);
