@@ -6,6 +6,7 @@
 #include "pthread.h"
 #include "putcolour.h"
 
+// Undefine any existing version of MAX macro. Define simple MAX.
 #ifdef MAX
 #undef MAX
 #endif  // MAX

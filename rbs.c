@@ -8,11 +8,20 @@
 #include "pthread.h"
 #include "wallclock.h"
 
+// Use defines for TRUE and FALSE instead of boolean libraries.
 #define TRUE 1
 #define FALSE 0
+
+// Specify output file for results.
 #define RESULTS_FILE "redblue.txt"
+
+// Helper macro for printing error messages and immediately exiting.
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
 
+/*
+ * parse_cmd_args
+ * Helper function for parsing args from argv.
+ */
 void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int *tile_width, int *max_density,
                     int *max_steps, int *random_seed, char *interactive)
 {
@@ -52,34 +61,62 @@ void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int 
     if (*max_steps <= 0) ERROR("Max steps must be greater than 0.");
 }
 
+/*
+ * main
+ * Run the red blue algorithm.
+ *
+ * pN: Use N processors. 1 >= N >= 16.
+ * bN: Width of board is N points. Board size is N x N.
+ * tN: Width of one overlay tile is N. Tile size is N x N. Tile width divides board width.
+ * cN: Maximum colour density in integer percent. 1 <= N <= 100.
+ * mN: Maximum number of full steps.
+ * sN: (optional) Random seed.
+ * i:  (optional) interactive mode switch.
+ *
+ * returns: Exit code.
+ */
 int main(int argc, char *argv[])
 {
     int i;
     int n_procs = 0, board_width = 0, tile_width = 0, max_density = 0, max_steps = 0, random_seed = time(NULL);
-    char interactive = FALSE;
     int n_threads, n_check_tasks, n_shift_tasks, num_steps = 0;
     int max_check_thread_tasks, max_shift_thread_tasks;
+    char interactive = FALSE;
     double elapsed_time;
-    board b;
     FILE *results_file;
+    board b;
     pthread_t *threads;
     check_tiles_threaded_tasks *check_thread_tasks;
     shift_args *shift_thread_tasks;
 
     StartTime();
+
+    // Parse arguments from command line.
     parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed,
                    &interactive);
-    // Initialization of board, threads, and memory.
+
+    // Initializ the board.
     init_board(&b, board_width, random_seed);
+
+    // One-time initialization of thread and task memory. 
+    // Keeps the program from incurring significant overhead due to malloc/freeing in each shift and check step.
     n_threads = n_procs - 1;
     if (n_threads) {
+
+        // Number of checks is the total number of tiles in the board.
         n_check_tasks = (b.width - tile_width) * (b.width - tile_width);
-        n_shift_tasks = b.width;
         max_check_thread_tasks = (n_check_tasks / n_threads) + 1;
+
+        // Number of shifts is the total number of rows or columns in the board.
+        n_shift_tasks = b.width;
         max_shift_thread_tasks = (n_shift_tasks / n_threads) + 1;
+
+        // Allocate threads and tasks.
         threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
         check_thread_tasks = (check_tiles_threaded_tasks *) malloc(n_threads * sizeof(check_tiles_threaded_tasks));
         shift_thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
+
+        // Allocate task fields.
         for (i = 0; i < n_threads; i++) {
             check_thread_tasks[i].args_list = (check_tile_args *) malloc(max_check_thread_tasks * sizeof(check_tile_args));
             check_thread_tasks[i].results = (tile_result *) malloc(max_check_thread_tasks * sizeof(tile_result));
@@ -91,6 +128,7 @@ int main(int argc, char *argv[])
         shift_thread_tasks = NULL;
     }
 
+    // Run algorithm. Interactively if specified.
     if (interactive) {
         num_steps = rbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width,
                                     max_density, max_steps);
@@ -99,16 +137,21 @@ int main(int argc, char *argv[])
                         max_steps);
     }
 
+    // Print results to stdout and file.
     results_file = fopen(RESULTS_FILE, "w");
     print_board(b, results_file, FALSE);
     for (i = 1; i < argc; i++) {
         fprintf(stdout, "%s ", argv[i]);
         fprintf(results_file, "%s ", argv[i]);
     }
+
+    // Calculate elasped time after all other operations.
+    // Print final lines to stdout and file.
     elapsed_time = EndTime();
     fprintf(stdout, "%d %d %.2lf\n", num_steps, b.max_density, elapsed_time);
     fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
 
+    // Free memory that was allocated if running in parallel.
     if (n_threads) {
         for (i = 0; i < n_threads; i++) {
             free(check_thread_tasks[i].args_list);
@@ -119,6 +162,8 @@ int main(int argc, char *argv[])
         free(check_thread_tasks);
         free(threads);
     }
+
+    // Free memory that was allocated in init_board.
     free_board(&b);
     return 0;
 }
@@ -143,13 +188,17 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
     int additional_steps, result;
     int n_steps = 0, n_half_steps = 0;
     printf("rbs: Interactive mode.\n");
+
+    // Repeatedly get key choice from user and quit when complete.
     do {
         c = getchar();
         if (c == '\n') {
+            // enter: Run one full step.
             shift_board_threaded(b, threads, shift_thread_tasks, n_procs);
             n_half_steps += 2;
             n_steps++;
         } else if (c == '#') {
+            // #n: Run n full steps.
             scanf("%d", &additional_steps);
             result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                          additional_steps);
@@ -157,6 +206,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             n_steps += result;
             getchar();
         } else if (c == 'h') {
+            // h: Run 1 half step.
             if (n_half_steps % 2 == 0) {
                 shift_red_threaded(b, threads, shift_thread_tasks, n_procs);
             } else {
@@ -166,6 +216,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             n_half_steps++;
             getchar();
         } else if (c == 'c') {
+            // c: Run until complete
             if (n_half_steps % 2 == 1) {
                 shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
                 n_half_steps++;
@@ -174,13 +225,15 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             return n_steps + rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                                  max_steps - n_steps);
         } else if (c == 'x') {
+            // x: Quit algorithm imediately.
             break;
         } else {
             printf("Invalid character.\n");
         }
+
+        // Check and print board after each iteration.
         check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
         print_board(*b, stdout, TRUE);
     } while (!b->complete && n_steps < max_steps);
     return n_steps;
-    return 0;
 }
