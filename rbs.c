@@ -200,6 +200,11 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
         } else if (c == '#') {
             // #n: Run n full steps.
             scanf("%d", &additional_steps);
+            if (n_half_steps % 2 == 1) {
+                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
+                n_half_steps++;
+                n_steps++;
+            }
             result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                          additional_steps);
             n_half_steps += 2 * result;
