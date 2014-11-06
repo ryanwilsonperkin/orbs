@@ -39,7 +39,7 @@ void check_board_threaded(board *b, pthread_t *threads, check_tiles_threaded_tas
         return;
     }
     // Calculate number of tasks, number of threads, and maximum number of tasks per thread.
-    n_tasks = (b->width - tile_width) * (b->width - tile_width);
+    n_tasks = (b->width / tile_width) * (b->width / tile_width);
     n_threads = n_procs - 1;
     max_thread_tasks = (n_tasks / n_threads) + 1;
 

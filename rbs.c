@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     if (n_threads) {
 
         // Number of checks is the total number of tiles in the board.
-        n_check_tasks = (b.width - tile_width) * (b.width - tile_width);
+        n_check_tasks = (b.width / tile_width) * (b.width / tile_width);
         max_check_thread_tasks = (n_check_tasks / n_threads) + 1;
 
         // Number of shifts is the total number of rows or columns in the board.
