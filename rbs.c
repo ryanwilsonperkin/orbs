@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     }
 
     if (interactive) {
-        return rbs_interactive(argc, argv, n_procs, board_width, tile_width, max_density, max_steps, random_seed);
+        num_steps = rbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
     } else {
         num_steps = rbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
     }
@@ -130,8 +130,48 @@ int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tile
     return num_steps;
 }
 
-int rbs_interactive(int argc, char *argv[], int n_procs, int board_width, int tile_width, int max_density,
-                    int max_steps, int random_seed)
+int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density, int max_steps)
 {
+    char c;
+    int additional_steps, result;
+    int n_steps = 0, n_half_steps = 0;
+    printf("rbs: Interactive mode.\n");
+    do {
+        c = getchar();
+        if (c == '\n') {
+            shift_board_threaded(b, threads, shift_thread_tasks, n_procs);
+            n_half_steps += 2;
+            n_steps++;
+        } else if (c == '#') {
+            scanf("%d", &additional_steps);
+            result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, additional_steps);
+            n_half_steps += 2 * result;
+            n_steps += result;
+            getchar();
+        } else if (c == 'h') {
+            if (n_half_steps % 2 == 0) {
+                shift_red_threaded(b, threads, shift_thread_tasks, n_procs);
+            } else {
+                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
+                n_steps++;
+            }
+            n_half_steps++;
+            getchar();
+        } else if (c == 'c') {
+            if (n_half_steps % 2 == 1) {
+                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
+                n_half_steps++;
+                n_steps++;
+            }
+            return n_steps + rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps - n_steps);
+        } else if (c == 'x') {
+            break;
+        } else {
+            printf("Invalid character.\n");
+        }
+        check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
+        print_board(*b, stdout);
+    } while (!b->complete && n_steps < max_steps);
+    return n_steps;
     return 0;
 }
