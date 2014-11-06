@@ -228,7 +228,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
             // x: Quit algorithm imediately.
             break;
         } else {
-            printf("Invalid character.\n");
+            printf("Error\n");
         }
 
         // Check and print board after each iteration.
