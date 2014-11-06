@@ -13,6 +13,44 @@
 #define RESULTS_FILE "redblue.txt"
 #define ERROR(s) {fprintf(stderr, "error: %s\n", s); exit(EXIT_FAILURE);}
 
+void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int *tile_width, int *max_density, int *max_steps, int *random_seed, char *interactive)
+{
+    int i;
+    for (i = 1; i < argc; i++) {
+        switch(argv[i][0]) {
+            case 'p':
+                *n_procs = atoi(argv[i]+1);
+                break;
+            case 'b':
+                *board_width = atoi(argv[i]+1);
+                break;
+            case 't':
+                *tile_width = atoi(argv[i]+1);
+                break;
+            case 'c':
+                *max_density = atoi(argv[i]+1);
+                break;
+            case 'm':
+                *max_steps = atoi(argv[i]+1);
+                break;
+            case 's':
+                *random_seed = atoi(argv[i]+1);
+                break;
+            case 'i':
+                *interactive = TRUE;
+                break;
+            default:
+                ERROR("Unrecognized argument.");
+        }
+    }
+    
+    if (*n_procs <= 0) ERROR("Thread count must be greater than 0.");
+    if (*board_width <= 1) ERROR("Board width must be greater than 1.");
+    if (*tile_width <= 0 || *board_width % *tile_width != 0) ERROR("Tile width must divide board width.");
+    if (*max_density < 1 || *max_density > 100) ERROR("Max density must be a value between 1 and 100.");
+    if (*max_steps <= 0) ERROR("Max steps must be greater than 0.");
+}
+
 int main(int argc, char *argv[])
 {
     int i;
@@ -27,41 +65,8 @@ int main(int argc, char *argv[])
     check_tiles_threaded_tasks *check_thread_tasks;
     shift_args *shift_thread_tasks;
 
-    for (i = 1; i < argc; i++) {
-        switch(argv[i][0]) {
-            case 'p':
-                n_procs = atoi(argv[i]+1);
-                break;
-            case 'b':
-                board_width = atoi(argv[i]+1);
-                break;
-            case 't':
-                tile_width = atoi(argv[i]+1);
-                break;
-            case 'c':
-                max_density = atoi(argv[i]+1);
-                break;
-            case 'm':
-                max_steps = atoi(argv[i]+1);
-                break;
-            case 's':
-                random_seed = atoi(argv[i]+1);
-                break;
-            case 'i':
-                interactive = TRUE;
-                break;
-            default:
-                ERROR("Unrecognized argument.");
-        }
-    }
-    
-    if (n_procs <= 0) ERROR("Thread count must be greater than 0.");
-    if (board_width <= 1) ERROR("Board width must be greater than 1.");
-    if (tile_width <= 0 || board_width % tile_width != 0) ERROR("Tile width must divide board width.");
-    if (max_density < 1 || max_density > 100) ERROR("Max density must be a value between 1 and 100.");
-    if (max_steps <= 0) ERROR("Max steps must be greater than 0.");
-
     StartTime();
+    parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed, &interactive);
     // Initialization of board, threads, and memory.
     init_board(&b, board_width, random_seed);
     n_threads = n_procs - 1;
