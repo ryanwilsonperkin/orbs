@@ -34,6 +34,9 @@ typedef struct check_tiles_threaded_tasks_
     check_tile_args *args_list;
     tile_result *results;
     int n_tasks;
+
+    // Avoid false sharing.
+    char padding[52];
 } check_tiles_threaded_tasks;
 
 /*
@@ -49,6 +52,8 @@ typedef struct shift_args_
     board *b;
     int *indices;
     int n_indices;
+
+    char padding[52];
 } shift_args;
 
 /*
