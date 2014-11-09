@@ -8,7 +8,7 @@
  *
  * b: The board.
  * n_procs: Number of available processorsx
- * tile_with: Width of tile to use when checking board.
+ * tile_width: Width of tile to use when checking board.
  * max_density: Stopping condition for density of tiles in board.
  * max_steps: Maximum number of shifts to perform on board.
  *

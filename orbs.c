@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     // Parse arguments from command line.
     parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed);
 
-    // Initializ the board.
+    // Initialize the board.
     init_board(&b, board_width, random_seed);
     num_steps = orbs(&b, n_procs, tile_width, max_density, max_steps);
 
