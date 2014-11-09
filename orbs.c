@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
     // Print results to stdout and file.
     results_file = fopen(RESULTS_FILE, "w");
-    print_board(b, results_file, FALSE);
+    print_board(b, results_file);
     for (i = 1; i < argc; i++) {
         fprintf(stdout, "%s ", argv[i]);
         fprintf(results_file, "%s ", argv[i]);

@@ -92,7 +92,7 @@ void init_board(board *b, int board_width, int random_seed);
  * results_file: File to print results to.
  * colour_mod: Flag to enable colour printing. 1 for true. 0 for false. (stdout only).
  */
-void print_board(board b, FILE *results_file, char colour_mode);
+void print_board(board b, FILE *results_file);
 
 /*
  * shift_board
