@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "board.h"
-#include "putcolour.h"
 
 // Undefine any existing version of MAX macro. Define simple MAX.
 #ifdef MAX
@@ -35,32 +34,24 @@ void free_board(board *b)
     free(b->points);
 }
 
-void print_board(board b, FILE *results_file, char colour_mode)
+void print_board(board b, FILE *results_file)
 {
     int i,j;
     char c;
-    enum COL_MODE colour;
     for (i = 0; i < b.width; i++) {
         for (j = 0; j < b.width; j++) {
             switch (b.points[i][j]) {
                 case 0:
-                    colour = PC_WHITE;
                     c = WHITE_CHAR;
                     break;
                 case 1:
-                    colour = PC_RED;
                     c = RED_CHAR;
                     break;
                 case 2:
-                    colour = PC_BLUE;
                     c = BLUE_CHAR;
                     break;
             }
-            if (colour_mode) {
-                putcolour(colour, &c, 1);
-            } else {
-                fprintf(results_file, "%c", c);
-            }
+            fprintf(results_file, "%c", c);
         }
         fprintf(results_file,"\n");
     }

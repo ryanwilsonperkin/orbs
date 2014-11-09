@@ -74,12 +74,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="board.c" />
-    <ClCompile Include="putcolour.c" />
     <ClCompile Include="orbs.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="board.h" />
-    <ClInclude Include="putcolour.h" />
     <ClInclude Include="orbs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
