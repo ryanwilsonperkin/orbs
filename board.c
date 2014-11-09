@@ -13,12 +13,23 @@ void init_board(board *b, int board_width, int random_seed)
 {
     int i,j;
     srand(random_seed);
-    b->points = (int **) malloc(board_width * sizeof(int *));
+    b->points = (char **) malloc(board_width * sizeof(char *));
     for (i = 0; i < board_width; i++) {
-        b->points[i] = (int *) malloc(board_width * sizeof(int));
+        b->points[i] = (char *) malloc((board_width + 1) * sizeof(char));
         for (j = 0; j < board_width; j++) {
-            b->points[i][j] = rand() % 3;
+            switch(rand() % 3) {
+                case 0:
+                    b->points[i][j] = WHITE;
+                    break;
+                case 1:
+                    b->points[i][j] = RED;
+                    break;
+                case 2:
+                    b->points[i][j] = BLUE;
+                    break;
+            }
         }
+        b->points[i][board_width] = '\0';
     }
     b->width = board_width;
     b->complete = FALSE;
@@ -36,24 +47,9 @@ void free_board(board *b)
 
 void print_board(board b, FILE *results_file)
 {
-    int i,j;
-    char c;
+    int i;
     for (i = 0; i < b.width; i++) {
-        for (j = 0; j < b.width; j++) {
-            switch (b.points[i][j]) {
-                case 0:
-                    c = WHITE_CHAR;
-                    break;
-                case 1:
-                    c = RED_CHAR;
-                    break;
-                case 2:
-                    c = BLUE_CHAR;
-                    break;
-            }
-            fprintf(results_file, "%c", c);
-        }
-        fprintf(results_file,"\n");
+        fprintf(results_file, "%s\n", b.points[i]);
     }
 }
 
@@ -64,13 +60,13 @@ tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
     for (i = y_start; i < y_end; i++) {
         for (j = x_start; j < x_end; j++) {
             switch (b.points[i][j]) {
-                case 0:
+                case WHITE:
                     result.white++;
                     break;
-                case 1:
+                case RED:
                     result.red++;
                     break;
-                case 2:
+                case BLUE:
                     result.blue++;
                     break;
             }
@@ -114,22 +110,23 @@ void shift_red(board *b)
 
 void shift_row(board *b, int index)
 {
-    int j, init_first, init_last;
+    int j;
+    char init_first, init_last;
     init_first = b->points[index][0];
     init_last = b->points[index][b->width - 1];
     
     for (j = 0; j < (b->width - 1); j++) {
-        if (b->points[index][j] == 1 && b->points[index][j+1] == 0) {
-            b->points[index][j] = 0;
-            b->points[index][j+1] = 1;
+        if (b->points[index][j] == RED && b->points[index][j+1] == WHITE) {
+            b->points[index][j] = WHITE;
+            b->points[index][j+1] = RED;
             j++;
         }
     }
 
-    if ((b->points[index][b->width - 1] == 1 && init_last == 1) &&
-            (b->points[index][0] == 0 && init_first == 0)) {
-        b->points[index][b->width - 1] = 0;
-        b->points[index][0] = 1;
+    if ((b->points[index][b->width - 1] == RED && init_last == RED) &&
+            (b->points[index][0] == WHITE && init_first == WHITE)) {
+        b->points[index][b->width - 1] = WHITE;
+        b->points[index][0] = RED;
     }
 }
 
@@ -143,21 +140,22 @@ void shift_blue(board *b)
 
 void shift_column(board *b, int index)
 {
-    int i, init_first, init_last;
+    int i;
+    char init_first, init_last;
     init_first = b->points[0][index];
     init_last = b->points[b->width - 1][index];
 
     for (i = 0; i < (b->width - 1); i++) {
-        if (b->points[i][index] == 2 && b->points[i+1][index] == 0) {
-            b->points[i][index] = 0;
-            b->points[i+1][index] = 2;
+        if (b->points[i][index] == BLUE && b->points[i+1][index] == WHITE) {
+            b->points[i][index] = WHITE;
+            b->points[i+1][index] = BLUE;
             i++;
         }
     }
 
-    if ((b->points[b->width - 1][index] == 2 && init_last == 2) && 
-            (b->points[0][index] == 0 && init_first == 0)) {
-        b->points[b->width - 1][index] = 0;
-        b->points[0][index] = 2;
+    if ((b->points[b->width - 1][index] == BLUE && init_last == BLUE) && 
+            (b->points[0][index] == WHITE && init_first == WHITE)) {
+        b->points[b->width - 1][index] = WHITE;
+        b->points[0][index] = BLUE;
     }
 }

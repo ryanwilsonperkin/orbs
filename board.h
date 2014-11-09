@@ -6,22 +6,22 @@
 #define TRUE 1
 #define FALSE 0
 
-#define WHITE_CHAR ' '
-#define RED_CHAR '>'
-#define BLUE_CHAR 'V'
+#define WHITE ' '
+#define RED '>'
+#define BLUE 'V'
 
 /*
  * board
  * Internal representation of a board used for red blue algorithm.
  *
- * points: A two-dimensional array of 0s (white), 1s (red), and 2s (blue).
+ * points: A two-dimensional array of white, red, and blue points.
  * width: The width of the board.
  * complete: A flag to reflect whether the board has encountered maximum density on a tile. 1 for true. 0 for false.
  * max_density: Density of most dense tile on board.
  */
 typedef struct board_
 {
-    int **points;
+    char **points;
     int width;
     char complete;
     int max_density;

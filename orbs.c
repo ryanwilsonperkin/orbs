@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
 
     // Initializ the board.
     init_board(&b, board_width, random_seed);
-
     num_steps = orbs(&b, n_procs, tile_width, max_density, max_steps);
 
     // Print results to stdout and file.
