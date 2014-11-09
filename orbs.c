@@ -1,3 +1,4 @@
+#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -82,6 +83,9 @@ int main(int argc, char *argv[])
 
     // Parse arguments from command line.
     parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed);
+
+    // Set number of threads to use in omp sections.
+    omp_set_num_threads(n_procs);
 
     // Initialize the board.
     init_board(&b, board_width, random_seed);

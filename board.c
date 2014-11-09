@@ -82,13 +82,13 @@ void check_board(board *b, int max_density, int tile_width)
     tile_result result;
 
     threshold = tile_width * tile_width * max_density / 100;
+#pragma omp parallel for private(i,j)
     for (i = 0; i < b->width; i += tile_width) {
         for (j = 0; j < b->width; j += tile_width) {
             result = check_tile(*b, j, i, j + tile_width, i + tile_width);
             if (result.red > threshold || result.blue > threshold) {
                 b->complete = TRUE;
                 b->max_density = (MAX(result.red, result.blue) * 100) / (tile_width * tile_width);
-                return;
             }
         }
     }
@@ -103,6 +103,7 @@ void shift_board(board *b)
 void shift_red(board *b)
 {
     int i;
+#pragma omp parallel for private(i)
     for (i = 0; i < b->width; i++) {
         shift_row(b, i);
     }
@@ -133,6 +134,7 @@ void shift_row(board *b, int index)
 void shift_blue(board *b)
 {
     int j;
+#pragma omp parallel for private(j)
     for (j = 0; j < b->width; j++) {
         shift_column(b, j);
     }
