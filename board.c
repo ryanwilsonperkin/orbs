@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "board.h"
-#include "pthread.h"
 #include "putcolour.h"
 
 // Undefine any existing version of MAX macro. Define simple MAX.

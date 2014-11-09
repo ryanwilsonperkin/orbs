@@ -4,7 +4,6 @@
 
 #include "board.h"
 #include "orbs.h"
-#include "pthread.h"
 #include "wallclock.h"
 
 // Use defines for TRUE and FALSE instead of boolean libraries.
