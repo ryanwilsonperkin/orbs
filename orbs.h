@@ -1,8 +1,8 @@
-#ifndef RED_BLUE_RBS_H
-#define RED_BLUE_RBS_H
+#ifndef RED_BLUE_ORBS_H
+#define RED_BLUE_ORBS_H
 
 /*
- * rbs
+ * orbs
  * Run the red blue simulation on a board up to a maximum number of steps.
  * If threads and tasks are provided, parallelize the operation.
  * Prints results to a file called redblue.txt
@@ -18,11 +18,11 @@
  *
  * returns: Number of shifts performed.
  */
-int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
+int orbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
         int n_procs, int tile_width, int max_density, int max_steps);
 
 /*
- * rbs_interactive
+ * orbs_interactive
  * Interactively run the red blue simulation on a board up to a maximum number of steps.
  * If threads and tasks are provided, parallelize the operation.
  * Prints results to a file called redblue.txt
@@ -44,8 +44,8 @@ int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tile
  *
  * returns: Number of shifts performed.
  */
-int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
+int orbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
                     check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density,
                     int max_steps);
 
-#endif  // RED_BLUE_RBS_H
+#endif  // RED_BLUE_ORBS_H

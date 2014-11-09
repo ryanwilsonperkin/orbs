@@ -4,7 +4,7 @@
 
 #include "board.h"
 #include "board_threaded.h"
-#include "rbs.h"
+#include "orbs.h"
 #include "pthread.h"
 #include "wallclock.h"
 
@@ -130,10 +130,10 @@ int main(int argc, char *argv[])
 
     // Run algorithm. Interactively if specified.
     if (interactive) {
-        num_steps = rbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width,
+        num_steps = orbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width,
                                     max_density, max_steps);
     } else {
-        num_steps = rbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+        num_steps = orbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                         max_steps);
     }
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
+int orbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
         int n_procs, int tile_width, int max_density, int max_steps)
 {
     int num_steps = 0;
@@ -180,14 +180,14 @@ int rbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tile
     return num_steps;
 }
 
-int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
+int orbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
                     check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density,
                     int max_steps)
 {
     char c;
     int additional_steps, result;
     int n_steps = 0, n_half_steps = 0;
-    printf("rbs: Interactive mode.\n");
+    printf("orbs: Interactive mode.\n");
 
     // Repeatedly get key choice from user and quit when complete.
     do {
@@ -205,7 +205,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
                 n_half_steps++;
                 n_steps++;
             }
-            result = rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+            result = orbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                          additional_steps);
             n_half_steps += 2 * result;
             n_steps += result;
@@ -227,7 +227,7 @@ int rbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks
                 n_half_steps++;
                 n_steps++;
             }
-            return n_steps + rbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
+            return n_steps + orbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
                                  max_steps - n_steps);
         } else if (c == 'x') {
             // x: Quit algorithm imediately.
