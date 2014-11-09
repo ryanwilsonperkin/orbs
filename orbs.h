@@ -1,5 +1,5 @@
-#ifndef RED_BLUE_ORBS_H
-#define RED_BLUE_ORBS_H
+#ifndef OPENMP_RED_BLUE_ORBS_H
+#define OPENMP_RED_BLUE_ORBS_H
 
 /*
  * orbs
@@ -16,4 +16,4 @@
  */
 int orbs(board *b, int n_procs, int tile_width, int max_density, int max_steps);
 
-#endif  // RED_BLUE_ORBS_H
+#endif  // OPENMP_RED_BLUE_ORBS_H

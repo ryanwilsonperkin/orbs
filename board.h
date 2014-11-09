@@ -1,5 +1,5 @@
-#ifndef RED_BLUE_BOARD_H
-#define RED_BLUE_BOARD_H
+#ifndef OPENMP_RED_BLUE_BOARD_H
+#define OPENMP_RED_BLUE_BOARD_H
 
 #include <stdio.h>
 
@@ -136,4 +136,4 @@ void shift_row(board *b, int index);
  */
 void shift_column(board *b, int index);
 
-#endif  // RED_BLUE_BOARD_H
+#endif  // OPENMP_RED_BLUE_BOARD_H
