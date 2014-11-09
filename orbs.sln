@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rbs", "rbs.vcxproj", "{D515B6BA-9DB9-4E46-A404-7EFCCE0A4D26}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "orbs", "orbs.vcxproj", "{D515B6BA-9DB9-4E46-A404-7EFCCE0A4D26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
