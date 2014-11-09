@@ -23,7 +23,7 @@
  * Helper function for parsing args from argv.
  */
 void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int *tile_width, int *max_density,
-                    int *max_steps, int *random_seed, char *interactive)
+                    int *max_steps, int *random_seed)
 {
     int i;
     for (i = 1; i < argc; i++) {
@@ -45,9 +45,6 @@ void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int 
                 break;
             case 's':
                 *random_seed = atoi(argv[i]+1);
-                break;
-            case 'i':
-                *interactive = TRUE;
                 break;
             default:
                 ERROR("Unrecognized argument.");
@@ -71,7 +68,6 @@ void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int 
  * cN: Maximum colour density in integer percent. 1 <= N <= 100.
  * mN: Maximum number of full steps.
  * sN: (optional) Random seed.
- * i:  (optional) interactive mode switch.
  *
  * returns: Exit code.
  */
@@ -81,7 +77,6 @@ int main(int argc, char *argv[])
     int n_procs = 0, board_width = 0, tile_width = 0, max_density = 0, max_steps = 0, random_seed = time(NULL);
     int n_threads, n_check_tasks, n_shift_tasks, num_steps = 0;
     int max_check_thread_tasks, max_shift_thread_tasks;
-    char interactive = FALSE;
     double elapsed_time;
     FILE *results_file;
     board b;
@@ -92,8 +87,7 @@ int main(int argc, char *argv[])
     StartTime();
 
     // Parse arguments from command line.
-    parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed,
-                   &interactive);
+    parse_cmd_args(argc, argv, &n_procs, &board_width, &tile_width, &max_density, &max_steps, &random_seed);
 
     // Initializ the board.
     init_board(&b, board_width, random_seed);
@@ -128,14 +122,7 @@ int main(int argc, char *argv[])
         shift_thread_tasks = NULL;
     }
 
-    // Run algorithm. Interactively if specified.
-    if (interactive) {
-        num_steps = orbs_interactive(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width,
-                                    max_density, max_steps);
-    } else {
-        num_steps = orbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
-                        max_steps);
-    }
+    num_steps = orbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
 
     // Print results to stdout and file.
     results_file = fopen(RESULTS_FILE, "w");
@@ -178,67 +165,4 @@ int orbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_til
         check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
     } while(!b->complete && num_steps < max_steps);
     return num_steps;
-}
-
-int orbs_interactive(board *b, pthread_t *threads, shift_args *shift_thread_tasks,
-                    check_tiles_threaded_tasks * check_thread_tasks, int n_procs, int tile_width, int max_density,
-                    int max_steps)
-{
-    char c;
-    int additional_steps, result;
-    int n_steps = 0, n_half_steps = 0;
-    printf("orbs: Interactive mode.\n");
-
-    // Repeatedly get key choice from user and quit when complete.
-    do {
-        c = getchar();
-        if (c == '\n') {
-            // enter: Run one full step.
-            shift_board_threaded(b, threads, shift_thread_tasks, n_procs);
-            n_half_steps += 2;
-            n_steps++;
-        } else if (c == '#') {
-            // #n: Run n full steps.
-            scanf("%d", &additional_steps);
-            if (n_half_steps % 2 == 1) {
-                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
-                n_half_steps++;
-                n_steps++;
-            }
-            result = orbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
-                         additional_steps);
-            n_half_steps += 2 * result;
-            n_steps += result;
-            getchar();
-        } else if (c == 'h') {
-            // h: Run 1 half step.
-            if (n_half_steps % 2 == 0) {
-                shift_red_threaded(b, threads, shift_thread_tasks, n_procs);
-            } else {
-                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
-                n_steps++;
-            }
-            n_half_steps++;
-            getchar();
-        } else if (c == 'c') {
-            // c: Run until complete
-            if (n_half_steps % 2 == 1) {
-                shift_blue_threaded(b, threads, shift_thread_tasks, n_procs);
-                n_half_steps++;
-                n_steps++;
-            }
-            return n_steps + orbs(b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density,
-                                 max_steps - n_steps);
-        } else if (c == 'x') {
-            // x: Quit algorithm imediately.
-            break;
-        } else {
-            printf("Error\n");
-        }
-
-        // Check and print board after each iteration.
-        check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
-        print_board(*b, stdout, TRUE);
-    } while (!b->complete && n_steps < max_steps);
-    return n_steps;
 }
