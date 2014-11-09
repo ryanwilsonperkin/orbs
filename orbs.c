@@ -72,7 +72,7 @@ void parse_cmd_args(int argc, char *argv[], int *n_procs, int *board_width, int 
 int main(int argc, char *argv[])
 {
     int i;
-    int n_procs = 0, board_width = 0, tile_width = 0, max_density = 0, max_steps = 0, random_seed = time(NULL);
+    int n_procs = 0, board_width = 0, tile_width = 0, max_density = 0, max_steps = 0, random_seed = (int) time(NULL);
     int num_steps = 0;
     double elapsed_time;
     FILE *results_file;
