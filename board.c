@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "board.h"
-#include "board_threaded.h"
 #include "pthread.h"
 #include "putcolour.h"
 

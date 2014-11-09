@@ -4,13 +4,9 @@
 /*
  * orbs
  * Run the red blue simulation on a board up to a maximum number of steps.
- * If threads and tasks are provided, parallelize the operation.
  * Prints results to a file called redblue.txt
  *
  * b: The board.
- * threads: Threads to use for parallel execution of tasks. NULL if serial.
- * shift_thread_tasks: Task layout for shifting board. NULL if serial.
- * check_tiles_threaded_tasks: Task layout for checking board. NULL if serial.
  * n_procs: Number of available processorsx
  * tile_with: Width of tile to use when checking board.
  * max_density: Stopping condition for density of tiles in board.
@@ -18,7 +14,6 @@
  *
  * returns: Number of shifts performed.
  */
-int orbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
-        int n_procs, int tile_width, int max_density, int max_steps);
+int orbs(board *b, int n_procs, int tile_width, int max_density, int max_steps);
 
 #endif  // RED_BLUE_ORBS_H

@@ -3,7 +3,6 @@
 #include <time.h>
 
 #include "board.h"
-#include "board_threaded.h"
 #include "orbs.h"
 #include "pthread.h"
 #include "wallclock.h"
@@ -75,14 +74,10 @@ int main(int argc, char *argv[])
 {
     int i;
     int n_procs = 0, board_width = 0, tile_width = 0, max_density = 0, max_steps = 0, random_seed = time(NULL);
-    int n_threads, n_check_tasks, n_shift_tasks, num_steps = 0;
-    int max_check_thread_tasks, max_shift_thread_tasks;
+    int num_steps = 0;
     double elapsed_time;
     FILE *results_file;
     board b;
-    pthread_t *threads;
-    check_tiles_threaded_tasks *check_thread_tasks;
-    shift_args *shift_thread_tasks;
 
     StartTime();
 
@@ -92,37 +87,7 @@ int main(int argc, char *argv[])
     // Initializ the board.
     init_board(&b, board_width, random_seed);
 
-    // One-time initialization of thread and task memory. 
-    // Keeps the program from incurring significant overhead due to malloc/freeing in each shift and check step.
-    n_threads = n_procs - 1;
-    if (n_threads) {
-
-        // Number of checks is the total number of tiles in the board.
-        n_check_tasks = (b.width / tile_width) * (b.width / tile_width);
-        max_check_thread_tasks = (n_check_tasks / n_threads) + 1;
-
-        // Number of shifts is the total number of rows or columns in the board.
-        n_shift_tasks = b.width;
-        max_shift_thread_tasks = (n_shift_tasks / n_threads) + 1;
-
-        // Allocate threads and tasks.
-        threads = (pthread_t *) malloc(n_threads * sizeof(pthread_t));
-        check_thread_tasks = (check_tiles_threaded_tasks *) malloc(n_threads * sizeof(check_tiles_threaded_tasks));
-        shift_thread_tasks = (shift_args *) malloc(n_threads * sizeof(shift_args));
-
-        // Allocate task fields.
-        for (i = 0; i < n_threads; i++) {
-            check_thread_tasks[i].args_list = (check_tile_args *) malloc(max_check_thread_tasks * sizeof(check_tile_args));
-            check_thread_tasks[i].results = (tile_result *) malloc(max_check_thread_tasks * sizeof(tile_result));
-            shift_thread_tasks[i].indices = (int *) malloc(max_shift_thread_tasks * sizeof(int));
-        }
-    } else {
-        threads = NULL;
-        check_thread_tasks = NULL;
-        shift_thread_tasks = NULL;
-    }
-
-    num_steps = orbs(&b, threads, shift_thread_tasks, check_thread_tasks, n_procs, tile_width, max_density, max_steps);
+    num_steps = orbs(&b, n_procs, tile_width, max_density, max_steps);
 
     // Print results to stdout and file.
     results_file = fopen(RESULTS_FILE, "w");
@@ -138,31 +103,18 @@ int main(int argc, char *argv[])
     fprintf(stdout, "%d %d %.2lf\n", num_steps, b.max_density, elapsed_time);
     fprintf(results_file, "%d %d %.2lf", num_steps, b.max_density, elapsed_time);
 
-    // Free memory that was allocated if running in parallel.
-    if (n_threads) {
-        for (i = 0; i < n_threads; i++) {
-            free(check_thread_tasks[i].args_list);
-            free(check_thread_tasks[i].results);
-            free(shift_thread_tasks[i].indices);
-        }
-        free(shift_thread_tasks);
-        free(check_thread_tasks);
-        free(threads);
-    }
-
     // Free memory that was allocated in init_board.
     free_board(&b);
     return 0;
 }
 
-int orbs(board *b, pthread_t *threads, shift_args *shift_thread_tasks, check_tiles_threaded_tasks * check_thread_tasks,
-        int n_procs, int tile_width, int max_density, int max_steps)
+int orbs(board *b, int n_procs, int tile_width, int max_density, int max_steps)
 {
     int num_steps = 0;
     do {
-        shift_board_threaded(b, threads, shift_thread_tasks, n_procs);
+        shift_board(b);
         num_steps++;
-        check_board_threaded(b, threads, check_thread_tasks, max_density, tile_width, n_procs);
+        check_board(b, max_density, tile_width);
     } while(!b->complete && num_steps < max_steps);
     return num_steps;
 }
