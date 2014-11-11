@@ -78,21 +78,27 @@ tile_result check_tile(board b, int x_start, int y_start, int x_end, int y_end)
 void check_board(board *b, int max_density, int tile_width)
 {
     int i,j,k,terminator;
-    int threshold, tile_max, board_max, board_max_density;
+    int threshold, board_max_density;
+    int tile_max, thread_max, board_max;
     tile_result result;
 
     tile_max = 0;
     board_max = 0;
     terminator = b->width * b->width / tile_width;
-#pragma omp parallel for private(i,j,k,result,tile_max) shared(board_max)
-    for (k = 0; k < terminator; k += tile_width) {
-        i = (k / b->width) * tile_width;
-        j = k % b->width;
-        result = check_tile(*b, j, i, j + tile_width, i + tile_width);
-        tile_max = MAX(result.red, result.blue);
-        if (tile_max > board_max) {
+    #pragma omp parallel private(thread_max) shared(board_max)
+    {
+        thread_max = 0;
+        #pragma omp for private(i,j,k,result,tile_max)
+        for (k = 0; k < terminator; k += tile_width) {
+            i = (k / b->width) * tile_width;
+            j = k % b->width;
+            result = check_tile(*b, j, i, j + tile_width, i + tile_width);
+            tile_max = MAX(result.red, result.blue);
+            thread_max = MAX(tile_max, thread_max);
+        }
+        if (thread_max > board_max) {
             #pragma omp critical (BOARDMAX)
-            board_max = MAX(tile_max, board_max);
+            board_max = MAX(thread_max, board_max);
         }
     }
 
