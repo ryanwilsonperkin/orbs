@@ -166,28 +166,28 @@ void shift_blue(board *b)
     int j;
 #pragma omp parallel for private(j)
     for (j = 0; j < b->width; j++) {
-        shift_column(b, j);
+        shift_column(b->columns[j], b->width);
     }
 }
 
-void shift_column(board *b, int index)
+void shift_column(char **column, int length)
 {
     int i;
     char init_first, init_last;
-    init_first = b->points[0][index];
-    init_last = b->points[b->width - 1][index];
+    init_first = *column[0];
+    init_last = *column[length - 1];
 
-    for (i = 0; i < (b->width - 1); i++) {
-        if (b->points[i][index] == BLUE && b->points[i+1][index] == WHITE) {
-            b->points[i][index] = WHITE;
-            b->points[i+1][index] = BLUE;
+    for (i = 0; i < (length - 1); i++) {
+        if (*column[i] == BLUE && *column[i+1] == WHITE) {
+            *column[i] = WHITE;
+            *column[i+1] = BLUE;
             i++;
         }
     }
 
-    if ((b->points[b->width - 1][index] == BLUE && init_last == BLUE) && 
-            (b->points[0][index] == WHITE && init_first == WHITE)) {
-        b->points[b->width - 1][index] = WHITE;
-        b->points[0][index] = BLUE;
+    if ((*column[length - 1] == BLUE && init_last == BLUE) &&
+            (*column[0] == WHITE && init_first == WHITE)) {
+        *column[length - 1] = WHITE;
+        *column[0] = BLUE;
     }
 }

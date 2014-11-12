@@ -133,9 +133,9 @@ void shift_row(board *b, int index);
  * shift_column
  * Serially shift all the blue colours in a single column of the board.
  *
- * b: The board.
- * index: The column index.
+ * column: The column of the board.
+ * length: The length of the column.
  */
-void shift_column(board *b, int index);
+void shift_column(char **column, int length);
 
 #endif  // OPENMP_RED_BLUE_BOARD_H
