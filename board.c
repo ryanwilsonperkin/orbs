@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,17 +10,19 @@
 #endif  // MAX
 #define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
 
+#define CACHELINE 64
+
 void init_board(board *b, int board_width, int random_seed)
 {
     int i,j;
     srand(random_seed);
-    b->points = (char **) malloc(board_width * sizeof(char *));
-    b->columns = (char ***) malloc(board_width * sizeof(char **));
-    b->rows = (char ***) malloc(board_width * sizeof(char **));
+    b->points = (char **) _aligned_malloc(board_width * sizeof(char *), CACHELINE);
+    b->columns = (char ***) _aligned_malloc(board_width * sizeof(char **), CACHELINE);
+    b->rows = (char ***) _aligned_malloc(board_width * sizeof(char **), CACHELINE);
     for (i = 0; i < board_width; i++) {
-        b->points[i] = (char *) malloc((board_width + 1) * sizeof(char));
-        b->columns[i] = (char **) malloc(board_width * sizeof(char *));
-        b->rows[i] = (char **) malloc(board_width * sizeof(char *));
+        b->points[i] = (char *) _aligned_malloc((board_width + 1) * sizeof(char), CACHELINE);
+        b->columns[i] = (char **) _aligned_malloc(board_width * sizeof(char *), CACHELINE);
+        b->rows[i] = (char **) _aligned_malloc(board_width * sizeof(char *), CACHELINE);
         for (j = 0; j < board_width; j++) {
             switch(rand() % 3) {
                 case 0:
@@ -50,13 +53,13 @@ void free_board(board *b)
 {
     int i;
     for (i = 0; i < b->width; i++) {
-        free(b->points[i]);
-        free(b->columns[i]);
-        free(b->rows[i]);
+        _aligned_free(b->points[i]);
+        _aligned_free(b->columns[i]);
+        _aligned_free(b->rows[i]);
     }
-    free(b->points);
-    free(b->columns);
-    free(b->rows);
+    _aligned_free(b->points);
+    _aligned_free(b->columns);
+    _aligned_free(b->rows);
 }
 
 void print_board(board b, FILE *results_file)
