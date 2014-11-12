@@ -135,29 +135,29 @@ void shift_red(board *b)
     int i;
 #pragma omp parallel for private(i)
     for (i = 0; i < b->width; i++) {
-        shift_row(b, i);
+        shift_row(b->rows[i], b->width);
     }
 }
 
-void shift_row(board *b, int index)
+void shift_row(char **row, int length)
 {
     int j;
     char init_first, init_last;
-    init_first = b->points[index][0];
-    init_last = b->points[index][b->width - 1];
+    init_first = *row[0];
+    init_last = *row[length - 1];
     
-    for (j = 0; j < (b->width - 1); j++) {
-        if (b->points[index][j] == RED && b->points[index][j+1] == WHITE) {
-            b->points[index][j] = WHITE;
-            b->points[index][j+1] = RED;
+    for (j = 0; j < (length - 1); j++) {
+        if (*row[j] == RED && *row[j+1] == WHITE) {
+            *row[j] = WHITE;
+            *row[j+1] = RED;
             j++;
         }
     }
 
-    if ((b->points[index][b->width - 1] == RED && init_last == RED) &&
-            (b->points[index][0] == WHITE && init_first == WHITE)) {
-        b->points[index][b->width - 1] = WHITE;
-        b->points[index][0] = RED;
+    if ((*row[length - 1] == RED && init_last == RED) &&
+            (*row[0] == WHITE && init_first == WHITE)) {
+        *row[length - 1] = WHITE;
+        *row[0] = RED;
     }
 }
 

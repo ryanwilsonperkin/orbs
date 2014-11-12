@@ -124,10 +124,10 @@ void shift_blue(board *b);
  * shift_row
  * Serially shift all the red colours in a single row of the board.
  *
- * b: The board.
- * index: The row index.
+ * row: The row of the board.
+ * length: The length of the row.
  */
-void shift_row(board *b, int index);
+void shift_row(char **row, int length);
 
 /*
  * shift_column
