@@ -15,9 +15,11 @@ void init_board(board *b, int board_width, int random_seed)
     srand(random_seed);
     b->points = (char **) malloc(board_width * sizeof(char *));
     b->columns = (char ***) malloc(board_width * sizeof(char **));
+    b->rows = (char ***) malloc(board_width * sizeof(char **));
     for (i = 0; i < board_width; i++) {
         b->points[i] = (char *) malloc((board_width + 1) * sizeof(char));
         b->columns[i] = (char **) malloc(board_width * sizeof(char *));
+        b->rows[i] = (char **) malloc(board_width * sizeof(char *));
         for (j = 0; j < board_width; j++) {
             switch(rand() % 3) {
                 case 0:
@@ -36,6 +38,7 @@ void init_board(board *b, int board_width, int random_seed)
     for (i = 0; i < board_width; i++) {
         for (j = 0; j < board_width; j++) {
             b->columns[j][i] = &b->points[i][j];
+            b->rows[i][j] = &b->points[i][j];
         }
     }
     b->width = board_width;
@@ -49,9 +52,11 @@ void free_board(board *b)
     for (i = 0; i < b->width; i++) {
         free(b->points[i]);
         free(b->columns[i]);
+        free(b->rows[i]);
     }
     free(b->points);
     free(b->columns);
+    free(b->rows);
 }
 
 void print_board(board b, FILE *results_file)
