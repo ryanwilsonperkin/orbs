@@ -22,6 +22,7 @@
 typedef struct board_
 {
     char **points;
+    char ***columns;
     int width;
     char complete;
     int max_density;
