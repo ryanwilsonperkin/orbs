@@ -1,3 +1,9 @@
+/*
+ * board.h
+ * Defintion of board functions in OpenMP.
+ *
+ * by Ryan Wilson-Perkin (0719644)
+ */
 #ifndef OPENMP_RED_BLUE_BOARD_H
 #define OPENMP_RED_BLUE_BOARD_H
 

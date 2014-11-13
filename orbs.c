@@ -1,3 +1,9 @@
+/*
+ * orbs.c
+ * Implementation of Red Blue algorithm in OpenMP.
+ *
+ * by Ryan Wilson-Perkin (0719644)
+ */
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>

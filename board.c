@@ -1,3 +1,9 @@
+/*
+ * board.c
+ * Implementation of board functions in OpenMP.
+ *
+ * by Ryan Wilson-Perkin (0719644)
+ */
 #include <malloc.h>
 #include <stdio.h>
 #include <stdlib.h>

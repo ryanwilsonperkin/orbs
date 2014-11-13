@@ -1,3 +1,9 @@
+/*
+ * orbs.c
+ * Definition of Red Blue algorithm in OpenMP.
+ *
+ * by Ryan Wilson-Perkin (0719644)
+ */
 #ifndef OPENMP_RED_BLUE_ORBS_H
 #define OPENMP_RED_BLUE_ORBS_H
 
